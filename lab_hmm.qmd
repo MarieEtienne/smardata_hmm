@@ -117,7 +117,6 @@ traj_plot <- ggmap::ggmap(zone_map) +
         axis.title = element_blank())
 ```
 
-```markdown
 ```{r world_plot}
 world <- ne_countries(scale = "medium", returnclass = "sf") %>%
   st_crop(c(xmin = -90, ymin = -60, xmax = -30, ymax = 15))
@@ -198,3 +197,135 @@ smoothing_function <- function(utm_data_){
 }
 fou_dta_utm_smoothed <- map_dfr(split(fou_dta_utm, fou_dta_utm$ID), smoothing_function)
 ```
+
+
+
+```{r plot_smoothing}
+fou_dta_utm_smoothed %>% 
+  dplyr::select(Easting, Easting_smoothed, Northing, Northing_smoothed) %>% 
+  unite(col = "Raw", Easting, Northing, sep = "-") %>% 
+  unite(col = "Smoothed", Easting_smoothed, Northing_smoothed, sep = "-") %>% 
+  gather(key = "Trajectory", value = "Coordinates", factor_key = TRUE) %>% 
+  separate(col = Coordinates, into = c("Longitude", "Latitude"), sep = "-", convert = TRUE) %>% 
+  mutate(Trajectory = factor(Trajectory, labels = c("Raw", "Smoothed"))) %>% 
+  ggplot() +
+  aes(x = Longitude, y = Latitude, color = Trajectory) +
+  geom_path() +
+  coord_cartesian(ylim = c(955, 956) * 1e4, xlim = c(575, 580) * 1e3) +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), axis.title = element_blank())
+```
+
+# Fitting a Three-State Model
+
+First, we fit a three-state model. The discussion about choosing the number of states is addressed later.
+
+## Defining Metrics
+
+We aim to identify different behavioral types within the trajectory, such as foraging (associated with rapid direction changes) and goal-directed travel (characterized by straighter trajectories). Relevant metrics here are turning angle and step length, as these are biologically meaningful for these birds.
+
+We fit two models differing by the considered movement metrics (and their corresponding emission distributions):
+- **Step Length/Angle**: Metrics from @morales2004extracting, using gamma distribution for step length and von Mises distribution for angles.
+- **Bivariate Velocity**: Metrics from @gurarie2009novel, using two independent normal distributions.
+
+## Initializing the Algorithm
+
+These models without covariates have 18 parameters (12 for emission distributions and 6 for transition probabilities). Optimization in such a parameter space is sensitive to initial values. We use a simple k-means classification to find plausible initial parameters for the regimes.
+
+```{r moveHMM_data}
+moveHMM_data <- fou_dta_utm_smoothed %>% 
+  as.data.frame() %>%
+  rowid_to_column(var = "id_point") %>% 
+  dplyr::select(ID, id_point, time_step, Easting, Northing, Easting_smoothed, Northing_smoothed, 
+                alt_scaled, dist_scaled, dist_scaled_sq) %>% 
+  moveHMM::prepData(type = "UTM", coordNames = c("Easting_smoothed", "Northing_smoothed"))
+```
+
+```{r depmix_data_n_times}
+depmix_data <- moveHMM_data %>% 
+  as_tibble() %>% 
+  mutate(v_p = step * cos(angle), v_r = step * sin(angle)) %>%
+  replace_na(list(angle = 0, v_r = 0)) %>% 
+  mutate(v_p = ifelse(is.na(v_p), step, v_p))
+n_times <- depmix_data %>% 
+  group_by(ID) %>% 
+  summarise(n_times = n()) %>% 
+  pull(n_times)
+```
+
+```{r initial_model}
+library(depmixS4)
+source("utils_HMM.R")
+n_states <- 3
+set.seed(123)
+initial_model <- depmixS4::depmix(list(v_p ~ 1, v_r ~ 1), data = depmix_data, 
+                                  nstates = n_states,
+                                  family = list(gaussian(), gaussian()), ntimes = n_times,
+                                  respstart = get_init_depmix(depmix_data, nbStates = n_states),
+                                  initdata = rep(1/n_states, n_states),
+                                  transition = ~ 1)
+depmix_fit <- depmixS4::fit(initial_model, verbose = FALSE, emcontrol = em.control(crit = "relative"))
+```
+
+```{r depmix_results}
+rank_vector_depmix <-  posterior(depmix_fit) %>% 
+  dplyr::select(state) %>% 
+  mutate(step = depmix_data$step) %>% 
+  group_by(state) %>% 
+  summarise(mean_step = mean(step, na.rm = TRUE)) %>% 
+  arrange(state) %>% 
+  pull(mean_step) %>% 
+  rank()
+depmix_states <- posterior(depmix_fit) %>% 
+  rename(Predicted_state = state) %>% 
+  mutate(Predicted_state = rank_vector_depmix[Predicted_state] %>% 
+           factor(levels = 1:n_states)) %>% 
+  bind_cols(depmix_data, .) %>% 
+  as_tibble() %>% 
+  mutate(metric = "Bivariate Velocity")
+```
+
+```{r moveHMM_fit}
+par_init_moveHMM <- get_init_moveHMM(dta = moveHMM_data, nbStates = n_states)
+set.seed(123)
+moveHMM_fit <- moveHMM::fitHMM(data = moveHMM_data, nbStates = n_states, 
+                               stepPar0 = par_init_moveHMM$stepPar0,
+                               anglePar0 = par_init_moveHMM$anglePar0,
+                               formula = ~ 1)
+```
+
+```{r moveHMM_results}
+rank_vector_moveHMM <-  tibble(state = moveHMM::viterbi(moveHMM_fit)) %>% 
+  mutate(step = depmix_data$step) %>% 
+  group_by(state) %>% 
+  summarise(mean_step = mean(step, na.rm = TRUE)) %>% 
+  arrange(state) %>% 
+  pull(mean_step) %>% 
+  rank()
+moveHMM_states <- moveHMM::stateProbs(moveHMM_fit) %>% 
+  as_tibble() %>% 
+  mutate(Predicted_state = rank_vector_moveHMM[moveHMM::viterbi(moveHMM_fit)] %>% 
+           factor(levels = 1:n_states)) %>% 
+  mutate(metric = "Step Length/Angle")
+ICL(moveHMM_fit)
+```
+
+```{r estimated_states}
+estimated_states <- moveHMM_states %>% 
+  bind_rows(depmix_states) 
+```
+
+## Characterizing Hidden States
+
+For both packages used, HMM parameters are estimated via maximum likelihood, and the most probable sequence of hidden states is retrieved using the Viterbi algorithm. Hidden states correspond to velocity and turning angle distributions. In trajectory terms, they describe segments between two positions (separated by 10 seconds).
+
+```{r plot_predicted_states}
+estimated_states %>% 
+  group_by(ID, metric) %>%
+  mutate(Next_East = lead(x), Next_North = lead(y)) %>% 
+  ggplot(aes(x = x, y = y)) +
+  geom_segment(aes(xend = Next_East, yend = Next_North, color = Predicted_state)) +
+  facet_wrap(~ metric) +
+  labs(color = "Predicted State") +
+  theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank())
+```
+
