@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "references_hmm.html",
+    "href": "references_hmm.html",
+    "title": "References",
+    "section": "",
+    "text": "liste &lt;- \n  readLines('hmm.bib') |&gt; \n  as_tibble() |&gt; \n  filter(stringr::str_detect(value, pattern = '@|keywords')) |&gt; \n  rowid_to_column() %&gt;% \n  mutate(int_part = floor((rowid-1)/2), parity = rowid %% 2) %&gt;% \n  select(-rowid) %&gt;% \n  pivot_wider( values_from = value, names_from = parity, names_prefix = \"key\") |&gt; \n  mutate(key1 = stringr::str_remove(key1, pattern = '@[:alnum:]+\\\\{')) |&gt; \n  mutate(key1 = stringr::str_remove(key1, pattern = ',')) \n\nWarning in readLines(\"hmm.bib\"): incomplete final line found on 'hmm.bib'\n\nmaf_liste &lt;- liste %&gt;% \n  filter(str_detect(key0, 'MAF')) %&gt;% \n  select(key1) %&gt;% \n  pull()\n\nlinear_liste &lt;- liste %&gt;% \n  filter(!str_detect(key0, 'MAF')) %&gt;% \n  select(key1) %&gt;% \n  pull()\n  \nNoCite(bib = myBib, linear_liste)"
+  },
+  {
+    "objectID": "references_hmm.html#some-useful-references-to-dig-further-in-hmm",
+    "href": "references_hmm.html#some-useful-references-to-dig-further-in-hmm",
+    "title": "References",
+    "section": "Some useful references to dig further in HMM",
+    "text": "Some useful references to dig further in HMM\nCappe Oliverand Moulines, E. and T. Ryden (2005). Inference in Hidden Markov Models. Springer.\nRabiner, L. R. (1989). “A tutorial on hidden Markov models and selected applications in speech recognition”. In: Proceedings of the IEEE 77.2, pp. 257-286."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Hidden Markov model for movement data in Ecology",
+    "section": "",
+    "text": "Hidden Markov Models are a powerful class of statistical models that are particularly well-suited to analyzing sequential data, where observed patterns are influenced by underlying, unobservable (hidden) states.\nIn this course, we will explore the basic concepts linked with Hidden Markov Models (HMM):\n\nDefinition\nInference with partially observed data - EM algortihm\nBaum Welch Algortihm, EM algorithm in the context of HMM\nViterbi algorithm to reconstruct Hidden states"
+  },
+  {
+    "objectID": "index.html#course-description",
+    "href": "index.html#course-description",
+    "title": "Hidden Markov model for movement data in Ecology",
+    "section": "",
+    "text": "Hidden Markov Models are a powerful class of statistical models that are particularly well-suited to analyzing sequential data, where observed patterns are influenced by underlying, unobservable (hidden) states.\nIn this course, we will explore the basic concepts linked with Hidden Markov Models (HMM):\n\nDefinition\nInference with partially observed data - EM algortihm\nBaum Welch Algortihm, EM algorithm in the context of HMM\nViterbi algorithm to reconstruct Hidden states"
+  },
+  {
+    "objectID": "index.html#the-lab-session",
+    "href": "index.html#the-lab-session",
+    "title": "Hidden Markov model for movement data in Ecology",
+    "section": "The lab session",
+    "text": "The lab session\nIn ecological research, HMMs have gained prominence for their ability to extract meaningful behavioral states from movement data, such as distinguishing between foraging, resting, and traveling in animals.\nWe will apply the HMM concepts to analyze movement of animals and we will focus on Masked Booby (Sula dactylatra) as case studies (Data available here).\nThe data used in this lab were collected through the work of Sophie Bertrand (IRD), Guilherme Tavares (UFRGS), Christophe Barbraud, and Karine Delord (CNRS) and i would like to thank the International Associated Young Team (JEAI) IRD Tabasco for providing access to these data."
+  }
+]
