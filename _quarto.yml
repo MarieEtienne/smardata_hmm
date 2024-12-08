@@ -17,10 +17,10 @@ website:
         href: references_hmm.qmd
       - text: "Seminar"
         menu: 
-          - text: Lecture
-            href:  hmm_lecture.qmd
-          - text: Labs
-            href: lab_hmm.qmd
+          - text: "Lecture"
+            href: hmm_lecture.qmd
+          - text: "Lab"
+            href: lab_hmm.qmd 
 
 format:
   html:
