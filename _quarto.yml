@@ -1,0 +1,32 @@
+project:
+  render: 
+    - "*.qmd"
+  type: website
+
+website:
+  title: "Smart Data Master - Seminar Hidden Markov Model"
+  navbar:
+    right:
+      - href: index.qmd
+        text: Home
+    left:
+      - icon: github
+        href: https://github.com/MarieEtienne/smartdata_hmm.git
+        aria-label: GitHub
+      - text: "References "
+        href: references_hmm.qmd
+      - text: "Seminar"
+        menu: 
+          - text: Lecture
+            href:  hmm_lecture.qmd
+          - text: Labs
+            href: lab_hmm.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+editor: visual
+
