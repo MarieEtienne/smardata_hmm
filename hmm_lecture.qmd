@@ -1,0 +1,66 @@
+---
+title: "Introduction to Hidden markov Model"
+subtitle: "Application to movement ecology"
+author:
+  - name: Marie-Pierre Etienne
+    affiliation: 
+      - ENSAI - CREST
+    email: marie-pierre.etienne@ensai.fr
+date: "Last updated on `r format(Sys.time(), '%d %B, %Y')`"
+institute: https://marieetienne.github.io/MAF/
+execute: 
+  freeze: true
+editor: 
+  markdown: 
+    wrap: 72
+css: mpe_pres_revealjs.css
+format:
+  revealjs: 
+    theme: [default, custom.scss]
+    width: 1050
+    margin: 0.05
+    slide-number: true
+    slide-level: 2
+    show-slide-number: print
+    menu:
+      useTextContentForMissingTitles: false
+    mathjax: true  # Active MathJax
+    self-contained: true
+---
+
+```{r setup, include=FALSE, eval = TRUE}
+library(RefManageR)
+library(tidyverse) ## to benefit from the tidyverse coding system
+library(reticulate) ## to use python from R
+library(wesanderson)
+library(plotly)
+library(ggforce)
+```
+
+```{r reference,  include=FALSE, cache=FALSE, eval = TRUE}
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear",
+           cite.style = "alphabetic",
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+myBib <- ReadBib("./hmm.bib", check = FALSE)
+theme_set(theme_minimal())
+options(ggplot2.discrete.colour=   scale_color_manual(values = wesanderson::wes_palette(name = "Darjeeling1")) )
+couleur <-  wesanderson::wes_palette(name = "Darjeeling1")
+scale2 <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / ( sqrt((length(x)-1) / length(x)) *sd(x, na.rm) )
+```
+
+::: hidden
+\$\$
+
+\newcommand\R{{\mathbb{R}}}
+\newcommand\Xbf{{\boldsymbol{X}}}
+\newcommand\norm[1]{\lVert#1\rVert}
+\newcommand\xcol[1]{\boldsymbol{x}^{#1}}
+\newcommand\xrow[1]{\boldsymbol{x}_{#1}}
+\newcommand\xbf{\boldsymbol{x}}
+\newcommand\ybf{\boldsymbol{y}}
+
+\$\$
+:::
