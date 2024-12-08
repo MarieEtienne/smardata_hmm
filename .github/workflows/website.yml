@@ -15,9 +15,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      # - name: Install R packages
-      #   run: |
-      #     Rscript -e "install.packages(c('depmixS4','circular', 'moveHMM', 'lubridate', 'ggpubr', 'rnaturalearth', 'nlme', 'ggmap'))"
+      - name: Install R packages
+        run: |
+          Rscript -e "install.packages(c('adehabitatLT'))"
       - name: Generate slides
         run: "quarto render"
       - name: GitHub Pages action
