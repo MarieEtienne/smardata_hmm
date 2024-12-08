@@ -22,7 +22,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -106,12 +126,12 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-seminar">    
         <li>
-    <a class="dropdown-item" href="./hmm_lecture.qmd">
+    <a class="dropdown-item" href="./hmm_lecture.html">
  <span class="dropdown-text">Lecture</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./lab_hmm.html">
- <span class="dropdown-text">Labs</span></a>
+ <span class="dropdown-text">Lab</span></a>
   </li>  
     </ul>
   </li>
@@ -140,6 +160,12 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#data-presentation" id="toc-data-presentation" class="nav-link active" data-scroll-target="#data-presentation">Data Presentation</a></li>
   <li><a href="#projection" id="toc-projection" class="nav-link" data-scroll-target="#projection">Projection</a></li>
   <li><a href="#smoothing-the-data" id="toc-smoothing-the-data" class="nav-link" data-scroll-target="#smoothing-the-data">Smoothing the Data</a></li>
+  <li><a href="#fitting-a-three-state-model" id="toc-fitting-a-three-state-model" class="nav-link" data-scroll-target="#fitting-a-three-state-model">Fitting a Three-State Model</a>
+  <ul class="collapse">
+  <li><a href="#defining-metrics" id="toc-defining-metrics" class="nav-link" data-scroll-target="#defining-metrics">Defining Metrics</a></li>
+  <li><a href="#initializing-the-algorithm" id="toc-initializing-the-algorithm" class="nav-link" data-scroll-target="#initializing-the-algorithm">Initializing the Algorithm</a></li>
+  <li><a href="#characterizing-hidden-states" id="toc-characterizing-hidden-states" class="nav-link" data-scroll-target="#characterizing-hidden-states">Characterizing Hidden States</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -195,8 +221,6 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="data-presentation">Data Presentation</h2>
 <p>We focus on studying the behavior of Red-footed Boobies (<em>Sula sula</em>).</p>
 <p>Our dataset consists of three trajectories recorded for three Red-footed Boobies from Ilha do Meio, a Brazilian island part of the Fernando de Noronha archipelago in the Atlantic Ocean.</p>
-<p>```markdown ::: {.cell layout-align=“center”}</p>
-<p>:::</p>
 </section>
 <section id="projection" class="level2">
 <h2 class="anchored" data-anchor-id="projection">Projection</h2>
@@ -208,11 +232,36 @@ ul.task-list li input[type="checkbox"] {
 <p>Data here are acquired at high frequency (one point every 10 seconds). Although GPS data have minimal error, the close temporal spacing of observations can add erraticity to trajectories. Such erraticity is particularly visible in movement metrics used to detect different activities.</p>
 <p>To correct for these errors, we define a simple Gaussian linear hidden Markov model, as discussed earlier. The hidden dynamics are modeled as a random walk with an unknown innovation matrix, and the observation model assumes a Gaussian distribution centered on the true position with an unknown diagonal variance. The parameters are estimated using the EM algorithm in the <code>MARSS</code> package, and Kalman smoothing is used to estimate the true trajectory.</p>
 <p>A smoothed trajectory preview is shown in the figure below, illustrating how smoothing reduces trajectory irregularities. However, note that this transformation involves working with modified data, whose relevance may vary in specific cases.</p>
+</section>
+<section id="fitting-a-three-state-model" class="level1">
+<h1>Fitting a Three-State Model</h1>
+<p>First, we fit a three-state model. The discussion about choosing the number of states is addressed later.</p>
+<section id="defining-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="defining-metrics">Defining Metrics</h2>
+<p>We aim to identify different behavioral types within the trajectory, such as foraging (associated with rapid direction changes) and goal-directed travel (characterized by straighter trajectories). Relevant metrics here are turning angle and step length, as these are biologically meaningful for these birds.</p>
+<p>We fit two models differing by the considered movement metrics (and their corresponding emission distributions): - <strong>Step Length/Angle</strong>: Metrics from <span class="citation" data-cites="morales2004extracting">Morales et al. (<a href="#ref-morales2004extracting" role="doc-biblioref">2004</a>)</span>, using gamma distribution for step length and von Mises distribution for angles. - <strong>Bivariate Velocity</strong>: Metrics from <span class="citation" data-cites="gurarie2009novel">Gurarie, Andrews, and Laidre (<a href="#ref-gurarie2009novel" role="doc-biblioref">2009</a>)</span>, using two independent normal distributions.</p>
+</section>
+<section id="initializing-the-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="initializing-the-algorithm">Initializing the Algorithm</h2>
+<p>These models without covariates have 18 parameters (12 for emission distributions and 6 for transition probabilities). Optimization in such a parameter space is sensitive to initial values. We use a simple k-means classification to find plausible initial parameters for the regimes.</p>
+</section>
+<section id="characterizing-hidden-states" class="level2">
+<h2 class="anchored" data-anchor-id="characterizing-hidden-states">Characterizing Hidden States</h2>
+<p>For both packages used, HMM parameters are estimated via maximum likelihood, and the most probable sequence of hidden states is retrieved using the Viterbi algorithm. Hidden states correspond to velocity and turning angle distributions. In trajectory terms, they describe segments between two positions (separated by 10 seconds).</p>
+
 
 
 </section>
+</section>
 
-</main> <!-- /main -->
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-gurarie2009novel" class="csl-entry" role="listitem">
+Gurarie, Eliezer, Russel D Andrews, and Kristin L Laidre. 2009. <span>“A Novel Method for Identifying Behavioural Changes in Animal Movement Data.”</span> <em>Ecology Letters</em> 12 (5): 395–408.
+</div>
+<div id="ref-morales2004extracting" class="csl-entry" role="listitem">
+Morales, Juan Manuel, Daniel T Haydon, Jacqui Frair, Kent E Holsinger, and John M Fryxell. 2004. <span>“Extracting More Out of Relocation Data: Building Movement Models as Mixtures of Random Walks.”</span> <em>Ecology</em> 85 (9): 2436–45.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

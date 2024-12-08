@@ -11,7 +11,7 @@
     "href": "lab_hmm.html#data-presentation",
     "title": "Analyzing Masked Booby Movement Using HMM",
     "section": "Data Presentation",
-    "text": "Data Presentation\nWe focus on studying the behavior of Red-footed Boobies (Sula sula).\nOur dataset consists of three trajectories recorded for three Red-footed Boobies from Ilha do Meio, a Brazilian island part of the Fernando de Noronha archipelago in the Atlantic Ocean.\n```markdown ::: {.cell layout-align=“center”}\n:::"
+    "text": "Data Presentation\nWe focus on studying the behavior of Red-footed Boobies (Sula sula).\nOur dataset consists of three trajectories recorded for three Red-footed Boobies from Ilha do Meio, a Brazilian island part of the Fernando de Noronha archipelago in the Atlantic Ocean."
   },
   {
     "objectID": "lab_hmm.html#projection",
@@ -19,6 +19,27 @@
     "title": "Analyzing Masked Booby Movement Using HMM",
     "section": "Projection",
     "text": "Projection\nThe data for this booby are specified in latitude and longitude, which means they are based on angular coordinates on Earth’s surface. Methods described earlier rely on distance metrics (e.g., step lengths). While it’s possible to compute traveled distances using latitude and longitude, this involves formulas specific to spherical movements.\nTo circumvent this and use Euclidean distance, data are often projected into a local system. This projection must match the region of interest. Here, we use UTM coordinates for Zone 25 South. Geographic data manipulation is made easier in R using the sf package, which we use to project the data for easier distance calculations."
+  },
+  {
+    "objectID": "lab_hmm.html#defining-metrics",
+    "href": "lab_hmm.html#defining-metrics",
+    "title": "Analyzing Masked Booby Movement Using HMM",
+    "section": "Defining Metrics",
+    "text": "Defining Metrics\nWe aim to identify different behavioral types within the trajectory, such as foraging (associated with rapid direction changes) and goal-directed travel (characterized by straighter trajectories). Relevant metrics here are turning angle and step length, as these are biologically meaningful for these birds.\nWe fit two models differing by the considered movement metrics (and their corresponding emission distributions): - Step Length/Angle: Metrics from Morales et al. (2004), using gamma distribution for step length and von Mises distribution for angles. - Bivariate Velocity: Metrics from Gurarie, Andrews, and Laidre (2009), using two independent normal distributions."
+  },
+  {
+    "objectID": "lab_hmm.html#initializing-the-algorithm",
+    "href": "lab_hmm.html#initializing-the-algorithm",
+    "title": "Analyzing Masked Booby Movement Using HMM",
+    "section": "Initializing the Algorithm",
+    "text": "Initializing the Algorithm\nThese models without covariates have 18 parameters (12 for emission distributions and 6 for transition probabilities). Optimization in such a parameter space is sensitive to initial values. We use a simple k-means classification to find plausible initial parameters for the regimes."
+  },
+  {
+    "objectID": "lab_hmm.html#characterizing-hidden-states",
+    "href": "lab_hmm.html#characterizing-hidden-states",
+    "title": "Analyzing Masked Booby Movement Using HMM",
+    "section": "Characterizing Hidden States",
+    "text": "Characterizing Hidden States\nFor both packages used, HMM parameters are estimated via maximum likelihood, and the most probable sequence of hidden states is retrieved using the Viterbi algorithm. Hidden states correspond to velocity and turning angle distributions. In trajectory terms, they describe segments between two positions (separated by 10 seconds)."
   },
   {
     "objectID": "index.html",
