@@ -1,0 +1,208 @@
+Here is the translated version of your Rmarkdown file while preserving the Rmd formatting:
+
+---
+
+```markdown
+---
+title: "Analyzing Masked Booby Movement Using HMM"
+author:
+  - name: Marie-Pierre Etienne
+    affiliation: 
+      - ENSAI - CREST
+    email: marie-pierre.etienne@ensai.fr
+date: "Last updated on `r format(Sys.time(), '%d %B, %Y')`"
+institute: https://marieetienne.github.io/MAF/
+bibliography: TPs.bib
+execute: 
+  freeze: true
+editor: 
+  markdown: 
+    wrap: 72
+css: mpe_pres_revealjs.css
+---
+
+```{r setup, include=FALSE, eval = TRUE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE, comment = NA, cache = TRUE, message = FALSE,
+                      warning = FALSE, eval = FALSE,
+                      fig.align = "center")
+theme_set(theme_minimal())
+options(ggplot2.discrete.colour=   scale_color_manual(values = wesanderson::wes_palette(name = "Darjeeling1")) )
+couleur <-  wesanderson::wes_palette(name = "Darjeeling1")
+scale2 <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / ( sqrt((length(x)-1) / length(x)) *sd(x, na.rm) )
+
+```
+
+::: hidden
+\$\$
+
+\newcommand\R{{\mathbb{R}}}
+\newcommand\Xbf{{\boldsymbol{X}}}
+\newcommand\norm[1]{\lVert#1\rVert}
+\newcommand\xcol[1]{\boldsymbol{x}^{#1}}
+\newcommand\xrow[1]{\boldsymbol{x}_{#1}}
+\newcommand\xbf{\boldsymbol{x}}
+\newcommand\ybf{\boldsymbol{y}}
+
+\$\$
+:::
+```{r setup, include=FALSE, cache = FALSE}
+rm(list = ls())
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(ggpubr)
+library(sf)
+library("rnaturalearth")
+library(lubridate)
+library(nlme)
+source(file = 'utils_HMM.R')
+source(file = 'ICL.R')
+library(moveHMM)
+library(depmixS4)
+library(circular)
+```
+
+```{r ggplot_theme_set, cache = FALSE}
+options(ggplot2.continuous.colour="viridis")
+scale_colour_discrete <- function(...) {
+  scale_colour_manual(..., values=c(wesanderson::wes_palette("Darjeeling1"), "darkgreen"))
+}
+scale_fill_discrete <- function(...) {
+  scale_fill_manual(..., values=c(wesanderson::wes_palette("Darjeeling1"), "darkgreen"))
+}
+theme_set(theme_bw() +
+            theme(
+              panel.border = element_rect(colour = "black",
+                                          fill = rgb(0, 0, 0, 0)),
+              panel.grid = element_line(linetype = 2),
+              plot.background = element_rect(fill = "white"),# bg around panel
+              legend.background = element_blank(),
+              text = element_text(family = "LM Roman 10", size = 12, face = "bold"),
+              axis.title = element_text(size = rel(1.1)),
+              legend.text = element_text(size = rel(1)),
+              legend.title = element_text(size = rel(1.1)),
+              plot.subtitle = element_text(hjust = 0.5, size = rel(1)),
+              strip.background = element_rect(fill = "lightgoldenrod1"),
+              plot.title = element_text(face = "bold", size = rel(1.2), hjust = 0.5)))
+```
+
+## Data Presentation
+
+We focus on studying the behavior of Red-footed Boobies (*Sula sula*).
+
+Our dataset consists of three trajectories recorded for three Red-footed Boobies from Ilha do Meio, a Brazilian island part of the Fernando de Noronha archipelago in the Atlantic Ocean.
+
+```{r read_data}
+fou_dta <- map_dfr(c('trip 1 .csv',
+                     'trip 2 .csv',
+                     'trip 3 .csv'),
+                   function(f_){
+                     ID <- f_ %>% 
+                       stringr::str_split( ' ') %>% 
+                       unlist() %>% stringr::str_subset('BR')
+                     read_delim(file = file.path("../data/Fou_sophie/2017", f_ ),
+                                delim = ";", escape_double = FALSE,
+                                trim_ws = TRUE) %>%
+                       dplyr::select(id, vol, datetime,  alt, lat, lon, dist.nid) %>%
+                       rename(id_loc = id)  %>%
+                       mutate(ID = ID) %>% 
+                       rowid_to_column(var = "time_step")
+                   })  %>% 
+  mutate(dist_scaled = scale(dist.nid),
+         dist_scaled_sq = dist_scaled^2,
+         alt_scaled = scale(alt))
+```
+
+```{r traj_plot}
+zone_box <- c(-32.75, -4.7, -31.8, -3.75)
+zone_map <- ggmap::get_stamenmap(bbox = zone_box, 
+                                 zoom = 10)
+traj_plot <- ggmap::ggmap(zone_map) + 
+    labs(x = "Longitude", y = "Latitude") +
+    geom_path(data = fou_dta, aes(x = lon, y = lat, color = ID)) +
+  theme(legend.position = "none", axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank())
+```
+
+```markdown
+```{r world_plot}
+world <- ne_countries(scale = "medium", returnclass = "sf") %>%
+  st_crop(c(xmin = -90, ymin = -60, xmax = -30, ymax = 15))
+
+zone_contour <-  fou_dta %>% 
+  st_as_sf(coords = c("lon", "lat") ) %>% 
+  st_set_crs(4326) %>% 
+  st_bbox() %>% 
+  st_as_sfc()
+
+world_plot <- world  %>%  
+  ggplot() + 
+  geom_sf(fill = "#c9d0a3") + 
+  geom_sf(data = zone_contour, fill = "white", color = "red") +
+  theme(panel.background = element_rect(fill = "#99b3cc"))
+```
+
+```{r traj_data_plot}
+gridExtra::grid.arrange(world_plot, traj_plot, nrow = 1)
+```
+
+## Projection
+
+The data for this booby are specified in latitude and longitude, which means they are based on angular coordinates on Earth's surface. Methods described earlier rely on distance metrics (e.g., step lengths). While it's possible to compute traveled distances using latitude and longitude, this involves formulas specific to spherical movements.
+
+To circumvent this and use Euclidean distance, data are often projected into a local system. This projection must match the region of interest. Here, we use UTM coordinates for Zone 25 South. Geographic data manipulation is made easier in R using the `sf` package, which we use to project the data for easier distance calculations\footnote{Projection is critical because a degree of latitude and longitude do not correspond to the same distance. Using raw coordinates can lead to misinterpretation.}.  
+
+```{r fou_dta_sf_utm}
+fou_dta_utm <- fou_dta %>% 
+  st_as_sf(coords = c("lon", "lat")) %>% 
+  mutate(dist_scaled = scale(dist.nid),
+         dist_scaled_sq = dist_scaled^2,
+         alt_scaled = scale(alt)) %>% 
+  st_set_crs(4326)  %>% 
+  st_transform(crs = 32725) %>% 
+  mutate(Easting = st_coordinates(.)[,"X"],
+         Northing = st_coordinates(.)[,"Y"])
+```
+
+# Smoothing the Data
+
+Data here are acquired at high frequency (one point every 10 seconds). Although GPS data have minimal error, the close temporal spacing of observations can add erraticity to trajectories. Such erraticity is particularly visible in movement metrics used to detect different activities.
+
+To correct for these errors, we define a simple Gaussian linear hidden Markov model, as discussed earlier. The hidden dynamics are modeled as a random walk with an unknown innovation matrix, and the observation model assumes a Gaussian distribution centered on the true position with an unknown diagonal variance. The parameters are estimated using the EM algorithm in the `MARSS` package, and Kalman smoothing is used to estimate the true trajectory.  
+
+A smoothed trajectory preview is shown in the figure below, illustrating how smoothing reduces trajectory irregularities. However, note that this transformation involves working with modified data, whose relevance may vary in specific cases.
+
+```{r kalman_smoothing, include=FALSE, message = FALSE}
+require(MARSS)
+smoothing_function <- function(utm_data_){
+  MARSS_data <- utm_data_ %>% 
+    as.data.frame() %>% 
+    dplyr::select(x = Easting, y = Northing) %>% 
+    as.matrix() %>% 
+    t()
+  model_list <- list(B = diag(1, 2), Z = diag(1, 2),
+                     x0 = MARSS_data[,1, drop = FALSE], 
+                     V0 = diag(1, 2),
+                     U = matrix(0, nrow = 2),
+                     A = matrix(0, nrow = 2),
+                     Q = matrix(list("q1", 0, 0, "q2"), 2, 2),
+                     C = matrix(0, 2, 2),
+                     c = matrix(0, 2, 1),
+                     G = diag(1, 2),
+                     D = diag(0, 2),
+                     d = matrix(0, 2, 1),
+                     R = diag(3, 2)) # Standard error of 1 meter
+  MLEobj <- MARSS(MARSS_data, model = model_list,
+                  control = list(maxit = 1e3))
+  MLEobj$par <- MLEobj$start
+  kfList <- MARSSkfss(MLEobj)
+  output <- utm_data_ %>% 
+    mutate(Easting_smoothed = kfList$xtT[1, ],
+           Northing_smoothed = kfList$xtT[2, ])  %>% 
+    as_tibble() %>% 
+    dplyr::select(-geometry)
+  return(output)
+}
+fou_dta_utm_smoothed <- map_dfr(split(fou_dta_utm, fou_dta_utm$ID), smoothing_function)
+```
