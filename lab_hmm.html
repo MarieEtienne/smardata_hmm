@@ -6,9 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="MP Etienne">
+<meta name="author" content="Marie-Pierre Etienne">
+<meta name="dcterms.date" content="2024-12-08">
 
-<title>Hidden Markov model for movement data in Ecology – Smart Data Master - Seminar Hidden Markov Model</title>
+<title>Analyzing Masked Booby Movement Using HMM – Smart Data Master - Seminar Hidden Markov Model</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,7 +118,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
 </ul>
@@ -136,8 +137,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#course-description" id="toc-course-description" class="nav-link active" data-scroll-target="#course-description">Course description</a></li>
-  <li><a href="#the-lab-session" id="toc-the-lab-session" class="nav-link" data-scroll-target="#the-lab-session">The lab session</a></li>
+  <li><a href="#data-presentation" id="toc-data-presentation" class="nav-link active" data-scroll-target="#data-presentation">Data Presentation</a></li>
+  <li><a href="#projection" id="toc-projection" class="nav-link" data-scroll-target="#projection">Projection</a></li>
+  <li><a href="#smoothing-the-data" id="toc-smoothing-the-data" class="nav-link" data-scroll-target="#smoothing-the-data">Smoothing the Data</a></li>
   </ul>
 </nav>
     </div>
@@ -146,24 +148,34 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hidden Markov model for movement data in Ecology</h1>
+<h1 class="title">Analyzing Masked Booby Movement Using HMM</h1>
 </div>
 
 
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliations</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Marie-Pierre Etienne <a href="mailto:marie-pierre.etienne@ensai.fr" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            ENSAI - CREST
+          </p>
+        <p class="affiliation">
+            https://marieetienne.github.io/MAF/
+          </p>
+      </div>
+  </div>
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>MP Etienne </p>
-          </div>
-  </div>
-    
+      
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Dernière Mise à jour Octobre 2024</p>
+      <p class="date">December 8, 2024</p>
     </div>
   </div>
   
@@ -175,22 +187,27 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="course-description" class="level2">
-<h2 class="anchored" data-anchor-id="course-description">Course description</h2>
-<p>Hidden Markov Models are a powerful class of statistical models that are particularly well-suited to analyzing sequential data, where observed patterns are influenced by underlying, unobservable (hidden) states.</p>
-<p>In this course, we will explore the basic concepts linked with Hidden Markov Models (HMM):</p>
-<ul>
-<li>Definition</li>
-<li>Inference with partially observed data - EM algortihm</li>
-<li>Baum Welch Algortihm, EM algorithm in the context of HMM</li>
-<li>Viterbi algorithm to reconstruct Hidden states</li>
-</ul>
+<div class="hidden">
+<p>$$</p>
+<p>$$</p>
+</div>
+<section id="data-presentation" class="level2">
+<h2 class="anchored" data-anchor-id="data-presentation">Data Presentation</h2>
+<p>We focus on studying the behavior of Red-footed Boobies (<em>Sula sula</em>).</p>
+<p>Our dataset consists of three trajectories recorded for three Red-footed Boobies from Ilha do Meio, a Brazilian island part of the Fernando de Noronha archipelago in the Atlantic Ocean.</p>
+<p>```markdown ::: {.cell layout-align=“center”}</p>
+<p>:::</p>
 </section>
-<section id="the-lab-session" class="level2">
-<h2 class="anchored" data-anchor-id="the-lab-session">The lab session</h2>
-<p>In ecological research, HMMs have gained prominence for their ability to extract meaningful behavioral states from movement data, such as distinguishing between foraging, resting, and traveling in animals.</p>
-<p>We will apply the HMM concepts to analyze movement of animals and we will focus on three Red-footed Boobies (<em>Sula sula</em>). as case studies (<a href="trip1.csv">trip1</a>, <a href="trip2.csv">trip2</a>, <a href="trip3.csv">trip3</a>).</p>
-<p>The data used in this lab were collected through the work of Sophie Bertrand (IRD), Guilherme Tavares (UFRGS), Christophe Barbraud, and Karine Delord (CNRS) and i would like to thank the International Associated Young Team (JEAI) IRD Tabasco for providing access to these data.</p>
+<section id="projection" class="level2">
+<h2 class="anchored" data-anchor-id="projection">Projection</h2>
+<p>The data for this booby are specified in latitude and longitude, which means they are based on angular coordinates on Earth’s surface. Methods described earlier rely on distance metrics (e.g., step lengths). While it’s possible to compute traveled distances using latitude and longitude, this involves formulas specific to spherical movements.</p>
+<p>To circumvent this and use Euclidean distance, data are often projected into a local system. This projection must match the region of interest. Here, we use UTM coordinates for Zone 25 South. Geographic data manipulation is made easier in R using the <code>sf</code> package, which we use to project the data for easier distance calculations.</p>
+</section>
+<section id="smoothing-the-data" class="level1">
+<h1>Smoothing the Data</h1>
+<p>Data here are acquired at high frequency (one point every 10 seconds). Although GPS data have minimal error, the close temporal spacing of observations can add erraticity to trajectories. Such erraticity is particularly visible in movement metrics used to detect different activities.</p>
+<p>To correct for these errors, we define a simple Gaussian linear hidden Markov model, as discussed earlier. The hidden dynamics are modeled as a random walk with an unknown innovation matrix, and the observation model assumes a Gaussian distribution centered on the true position with an unknown diagonal variance. The parameters are estimated using the EM algorithm in the <code>MARSS</code> package, and Kalman smoothing is used to estimate the true trajectory.</p>
+<p>A smoothed trajectory preview is shown in the figure below, illustrating how smoothing reduces trajectory irregularities. However, note that this transformation involves working with modified data, whose relevance may vary in specific cases.</p>
 
 
 </section>

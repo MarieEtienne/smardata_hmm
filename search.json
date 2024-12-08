@@ -1,17 +1,24 @@
 [
   {
-    "objectID": "references_hmm.html",
-    "href": "references_hmm.html",
-    "title": "References",
+    "objectID": "lab_hmm.html",
+    "href": "lab_hmm.html",
+    "title": "Analyzing Masked Booby Movement Using HMM",
     "section": "",
-    "text": "liste &lt;- \n  readLines('hmm.bib') |&gt; \n  as_tibble() |&gt; \n  filter(stringr::str_detect(value, pattern = '@|keywords')) |&gt; \n  rowid_to_column() %&gt;% \n  mutate(int_part = floor((rowid-1)/2), parity = rowid %% 2) %&gt;% \n  select(-rowid) %&gt;% \n  pivot_wider( values_from = value, names_from = parity, names_prefix = \"key\") |&gt; \n  mutate(key1 = stringr::str_remove(key1, pattern = '@[:alnum:]+\\\\{')) |&gt; \n  mutate(key1 = stringr::str_remove(key1, pattern = ',')) \n\nWarning in readLines(\"hmm.bib\"): incomplete final line found on 'hmm.bib'\n\nmaf_liste &lt;- liste %&gt;% \n  filter(str_detect(key0, 'MAF')) %&gt;% \n  select(key1) %&gt;% \n  pull()\n\nlinear_liste &lt;- liste %&gt;% \n  filter(!str_detect(key0, 'MAF')) %&gt;% \n  select(key1) %&gt;% \n  pull()\n  \nNoCite(bib = myBib, linear_liste)"
+    "text": "$$\n$$"
   },
   {
-    "objectID": "references_hmm.html#some-useful-references-to-dig-further-in-hmm",
-    "href": "references_hmm.html#some-useful-references-to-dig-further-in-hmm",
-    "title": "References",
-    "section": "Some useful references to dig further in HMM",
-    "text": "Some useful references to dig further in HMM\nCappe Oliverand Moulines, E. and T. Ryden (2005). Inference in Hidden Markov Models. Springer.\nRabiner, L. R. (1989). “A tutorial on hidden Markov models and selected applications in speech recognition”. In: Proceedings of the IEEE 77.2, pp. 257-286."
+    "objectID": "lab_hmm.html#data-presentation",
+    "href": "lab_hmm.html#data-presentation",
+    "title": "Analyzing Masked Booby Movement Using HMM",
+    "section": "Data Presentation",
+    "text": "Data Presentation\nWe focus on studying the behavior of Red-footed Boobies (Sula sula).\nOur dataset consists of three trajectories recorded for three Red-footed Boobies from Ilha do Meio, a Brazilian island part of the Fernando de Noronha archipelago in the Atlantic Ocean.\n```markdown ::: {.cell layout-align=“center”}\n:::"
+  },
+  {
+    "objectID": "lab_hmm.html#projection",
+    "href": "lab_hmm.html#projection",
+    "title": "Analyzing Masked Booby Movement Using HMM",
+    "section": "Projection",
+    "text": "Projection\nThe data for this booby are specified in latitude and longitude, which means they are based on angular coordinates on Earth’s surface. Methods described earlier rely on distance metrics (e.g., step lengths). While it’s possible to compute traveled distances using latitude and longitude, this involves formulas specific to spherical movements.\nTo circumvent this and use Euclidean distance, data are often projected into a local system. This projection must match the region of interest. Here, we use UTM coordinates for Zone 25 South. Geographic data manipulation is made easier in R using the sf package, which we use to project the data for easier distance calculations."
   },
   {
     "objectID": "index.html",
@@ -32,6 +39,20 @@
     "href": "index.html#the-lab-session",
     "title": "Hidden Markov model for movement data in Ecology",
     "section": "The lab session",
-    "text": "The lab session\nIn ecological research, HMMs have gained prominence for their ability to extract meaningful behavioral states from movement data, such as distinguishing between foraging, resting, and traveling in animals.\nWe will apply the HMM concepts to analyze movement of animals and we will focus on Masked Booby (Sula dactylatra) as case studies (Data available here).\nThe data used in this lab were collected through the work of Sophie Bertrand (IRD), Guilherme Tavares (UFRGS), Christophe Barbraud, and Karine Delord (CNRS) and i would like to thank the International Associated Young Team (JEAI) IRD Tabasco for providing access to these data."
+    "text": "The lab session\nIn ecological research, HMMs have gained prominence for their ability to extract meaningful behavioral states from movement data, such as distinguishing between foraging, resting, and traveling in animals.\nWe will apply the HMM concepts to analyze movement of animals and we will focus on three Red-footed Boobies (Sula sula). as case studies (trip1, trip2, trip3).\nThe data used in this lab were collected through the work of Sophie Bertrand (IRD), Guilherme Tavares (UFRGS), Christophe Barbraud, and Karine Delord (CNRS) and i would like to thank the International Associated Young Team (JEAI) IRD Tabasco for providing access to these data."
+  },
+  {
+    "objectID": "references_hmm.html",
+    "href": "references_hmm.html",
+    "title": "References",
+    "section": "",
+    "text": "liste &lt;- \n  readLines('hmm.bib') |&gt; \n  as_tibble() |&gt; \n  filter(stringr::str_detect(value, pattern = '@|keywords')) |&gt; \n  rowid_to_column() %&gt;% \n  mutate(int_part = floor((rowid-1)/2), parity = rowid %% 2) %&gt;% \n  select(-rowid) %&gt;% \n  pivot_wider( values_from = value, names_from = parity, names_prefix = \"key\") |&gt; \n  mutate(key1 = stringr::str_remove(key1, pattern = '@[:alnum:]+\\\\{')) |&gt; \n  mutate(key1 = stringr::str_remove(key1, pattern = ',')) \n\nWarning in readLines(\"hmm.bib\"): incomplete final line found on 'hmm.bib'\n\nmaf_liste &lt;- liste %&gt;% \n  filter(str_detect(key0, 'MAF')) %&gt;% \n  select(key1) %&gt;% \n  pull()\n\nlinear_liste &lt;- liste %&gt;% \n  filter(!str_detect(key0, 'MAF')) %&gt;% \n  select(key1) %&gt;% \n  pull()\n  \nNoCite(bib = myBib, linear_liste)"
+  },
+  {
+    "objectID": "references_hmm.html#some-useful-references-to-dig-further-in-hmm",
+    "href": "references_hmm.html#some-useful-references-to-dig-further-in-hmm",
+    "title": "References",
+    "section": "Some useful references to dig further in HMM",
+    "text": "Some useful references to dig further in HMM\nAkaike, H. (1973). “Information theory as an extension of the maximum likelihood principle. Á In: Petrov, BN and Csaki, F”. In: Second International Symposium on Information Theory. Akademiai Kiado, Budapest, pp. 276Á281.\nBiernacki, C., G. Celeux, and G. Govaert (2000). “Assessing a mixture model for clustering with the integrated completed likelihood”. In: IEEE transactions on pattern analysis and machine intelligence 22.7, pp. 719-725.\nCappe Oliverand Moulines, E. and T. Ryden (2005). Inference in Hidden Markov Models. Springer.\nCarpenter, B., A. Gelman, M. D. Hoffman, et al. (2017). “Stan: A probabilistic programming language”. In: Journal of statistical software 76.1.\nde Valpine, P., D. Turek, C. Paciorek, et al. (2017). “Programming with models: writing statistical algorithms for general model structures with NIMBLE”. In: Journal of Computational and Graphical Statistics 26 (2), pp. 403-413. DOI: 10.1080/10618600.2016.1172487.\nFreitas, C., C. Lydersen, M. A. Fedak, et al. (2008). “A simple new algorithm to filter marine mammal Argos locations”. In: Marine Mammal Science 24.2, pp. 315-325.\nGuédon, Y. (2007). “Exploring the state sequence space for hidden Markov and semi-Markov chains”. In: Computational Statistics & Data Analysis 51.5, pp. 2379-2409.\nJammalamadaka, S. R. and A. Sengupta (2001). Topics in circular statistics. Vol. 5. world scientific.\nLunn, D. J., A. Thomas, N. Best, et al. (2000). “WinBUGS-a Bayesian modelling framework: concepts, structure, and extensibility”. In: Statistics and computing 10.4, pp. 325-337.\nMichelot, T., R. Langrock, and T. A. Patterson (2016). “moveHMM: an R package for the statistical modelling of animal movement data using hidden Markov models”. In: Methods in Ecology and Evolution 7.11, pp. 1308-1315. DOI: 10.1111/2041-210X.12578. eprint: https://besjournals.onlinelibrary.wiley.com/doi/pdf/10.1111/2041-210X.12578. URL: https://besjournals.onlinelibrary.wiley.com/doi/abs/10.1111/2041-210X.12578.\nMorales, J. M., D. T. Haydon, J. Frair, et al. (2004). “Extracting more out of relocation data: building movement models as mixtures of random walks”. In: Ecology 85.9, pp. 2436-2445.\nPatterson, T. A., L. Thomas, C. Wilcox, et al. (2008). “State–space models of individual animal movement”. In: Trends in Ecology & Evolution 23.2, pp. 87 - 94. ISSN: 0169-5347. DOI: https://doi.org/10.1016/j.tree.2007.10.009. URL: http://www.sciencedirect.com/science/article/pii/S0169534707003588.\nRabiner, L. R. (1989). “A tutorial on hidden Markov models and selected applications in speech recognition”. In: Proceedings of the IEEE 77.2, pp. 257-286."
   }
 ]
