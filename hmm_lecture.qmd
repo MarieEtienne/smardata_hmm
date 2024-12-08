@@ -31,10 +31,7 @@ format:
 ```{r setup, include=FALSE, eval = TRUE}
 library(RefManageR)
 library(tidyverse) ## to benefit from the tidyverse coding system
-library(reticulate) ## to use python from R
 library(wesanderson)
-library(plotly)
-library(ggforce)
 ```
 
 ```{r reference,  include=FALSE, cache=FALSE, eval = TRUE}
