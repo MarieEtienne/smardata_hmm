@@ -1,0 +1,60 @@
+---
+title: "References"
+format: html
+toc: true
+date: last-modified
+date-format: "[Last Updated on] MMMM, YYYY"
+css: mpe_pres_revealjs.css
+execute: 
+  freeze: auto
+---
+
+```{r setup, include=FALSE, eval = TRUE}
+library(RefManageR)
+library(tidyverse)
+```
+
+```{r reference,  include=FALSE, cache=FALSE, eval = TRUE}
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear",
+           cite.style = "alphabetic",
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+myBib <- ReadBib("./MAF.bib", check = FALSE)
+```
+
+::: hidden
+```{r}
+liste <- 
+  readLines('hmm.bib') |> 
+  as_tibble() |> 
+  filter(stringr::str_detect(value, pattern = '@|keywords')) |> 
+  rowid_to_column() %>% 
+  mutate(int_part = floor((rowid-1)/2), parity = rowid %% 2) %>% 
+  select(-rowid) %>% 
+  pivot_wider( values_from = value, names_from = parity, names_prefix = "key") |> 
+  mutate(key1 = stringr::str_remove(key1, pattern = '@[:alnum:]+\\{')) |> 
+  mutate(key1 = stringr::str_remove(key1, pattern = ',')) 
+  
+maf_liste <- liste %>% 
+  filter(str_detect(key0, 'MAF')) %>% 
+  select(key1) %>% 
+  pull()
+
+linear_liste <- liste %>% 
+  filter(!str_detect(key0, 'MAF')) %>% 
+  select(key1) %>% 
+  pull()
+  
+NoCite(bib = myBib, linear_liste)
+
+```
+:::
+
+## Some useful references to dig further in HMM
+
+```{r refs, echo=FALSE, results="asis", eval = TRUE, cache = FALSE}
+PrintBibliography(myBib) 
+```
+

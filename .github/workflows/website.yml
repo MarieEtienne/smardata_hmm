@@ -1,0 +1,41 @@
+name: website
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+
+jobs:
+  build:
+    name: Build website with quarto
+    runs-on: ubuntu-latest
+    container: mpetienne/maf:0.1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install R packages
+        run: |
+          Rscript -e "install.packages(c('palmerpenguins','GGally', 'ggforce', 'factoextra'))"
+      - name: Generate slides
+        run: "quarto render"
+      - name: GitHub Pages action
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+
+    # A essayer pour le cache    
+    # - name: Cache R packages
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: ~/.R/library
+    #     key: ${{ runner.os }}-r-packages-${{ hashFiles('r-packages.txt') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-r-packages-
+    # 
+    # - name: Install R packages
+    #   run: |
+    #     Rscript -e 'packages <- scan("r-packages.txt", what = character()); install.packages(packages, repos = "https://cran.rstudio.com")'
+
