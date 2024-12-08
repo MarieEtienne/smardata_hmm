@@ -32,6 +32,7 @@ format:
 library(RefManageR)
 library(tidyverse) ## to benefit from the tidyverse coding system
 library(wesanderson)
+library("ggpubr")
 ```
 
 ```{r reference,  include=FALSE, cache=FALSE, eval = TRUE}
@@ -42,6 +43,8 @@ BibOptions(check.entries = FALSE,
            hyperlink = FALSE,
            dashed = FALSE)
 myBib <- ReadBib("./hmm.bib", check = FALSE)
+myBib2 <- ReadBib("hmm_add.bib", check = FALSE)
+myBib <- myBib + myBib2
 theme_set(theme_minimal())
 options(ggplot2.discrete.colour=   scale_color_manual(values = wesanderson::wes_palette(name = "Darjeeling1")) )
 couleur <-  wesanderson::wes_palette(name = "Darjeeling1")
@@ -52,12 +55,551 @@ scale2 <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / ( sqrt((leng
 \$\$
 
 \newcommand\R{{\mathbb{R}}}
+\newcommand\P{{\mathbb{P}}}
+\newcommand\E{{\mathbb{E}}}
 \newcommand\Xbf{{\boldsymbol{X}}}
+\newcommand\Ybf{{\boldsymbol{Y}}}
+\newcommand\Zbf{{\boldsymbol{Z}}}
 \newcommand\norm[1]{\lVert#1\rVert}
 \newcommand\xcol[1]{\boldsymbol{x}^{#1}}
 \newcommand\xrow[1]{\boldsymbol{x}_{#1}}
 \newcommand\xbf{\boldsymbol{x}}
 \newcommand\ybf{\boldsymbol{y}}
+\newcommand\thetabf{\boldsymbol{\theta}}
+\newcommand\pibf{\boldsymbol{\pi}}
+\newcommand\nubf{\boldsymbol{\nu}}
+\newcommand\Pibf{\boldsymbol{\Pi}}
+\newcommand\gammabf{\boldsymbol{\gamma}}
+\newcommand\Mcal{\mathcal{M}}
+\newcommand{\hid}[1]{\class{bleu}{#1}}
+\newcommand{\Ehid}[1]{\class{bleufonce}{#1}}
+\newcommand{\obsy}[1]{\class{orange}{#1}}
+\newcommand{\Eobsy}[1]{\class{rouge}{#1}}
+
 
 \$\$
 :::
+
+# Ecological 
+
+## Movement Ecology Paradigm
+
+### `r Citep(myBib, 'nathan2008movement')` presents individual movement as the result of:
+
+::: {.columns}
+:::: {.column width="45%"}
+
+<figure>
+  <img src="nathan_fig.png" alt="Image Description" style="width:70%" />
+  <figcaption>Movement drivers by `r Citet(myBib, "nathan2008movement")`.</figcaption>
+</figure>
+
+::::
+
+:::: {.column width="50%"}
+- Motion capacities
+- Internal state
+- Environment
+::::
+
+:::
+
+[Movement informs on internal states and habitat preferences]{.rouge}
+
+
+## From Movement to Movement Data
+
+::: {.columns}
+:::: {.column width="50%"}
+<figure>
+  <img src="path_1.png" alt="Movement Path 1" style="width:100%" />
+</figure>
+::::
+:::
+
+## From Movement to Movement Data
+
+
+::: {.columns}
+:::: {.column width="50%"}
+<figure>
+  <img src="path_2.png" alt="Movement Path 2" style="width:100%" />
+</figure>
+::::
+:::
+
+## From Movement to Movement Data
+
+
+::: {.columns}
+:::: {.column width="50%"}
+<figure>
+  <img src="path_3.png" alt="Movement Path 3" style="width:100%" />
+</figure>
+::::
+:::
+
+## From Movement to Movement Data
+
+
+::: {.columns}
+:::: {.column width="50%"}
+<figure>
+  <img src="path_p3.png" alt="Movement Path P3" style="width:100%" />
+</figure>
+::::
+:::
+
+
+## Description
+
+
+
+<figure>
+  <img src="movement_graph.png" alt="Movement description" style="width:70%" />
+</figure>
+
+
+
+
+## Continuous Process and Sampling
+
+::: {.columns}
+:::: {.column width="50%"}
+A continuous process sampled at some discrete, potentially irregular times.
+
+Time series with values in $\mathbb{R}^2$ (on Earth...).
+
+$$
+\begin{array}{|c|c|c|c|}
+\hline
+\text{Time} & \text{Location} & \text{Turning Angle} & \text{Speed} \\
+\hline
+t_{0} & (x_0, y_0) & \text{NA} & \text{NA} \\
+t_{1} & (x_1, y_1) & \text{NA} & sp_1 \\
+t_{2} & (x_2, y_2) & ang_2 & sp_2 \\
+\vdots & \vdots & \vdots & \vdots \\
+t_{n} & (x_n, y_n) & ang_n & sp_n \\
+\hline
+\end{array}
+$$
+::::
+:::
+
+## Ecological question: Identifying various movement patterns
+
+
+::: {.columns}
+:::: {.column width="45%"}
+Rarely in a supervised context
+
+<figure>
+  <img src="Fishing_Mada.png" alt="Fishing points in Mada" style="width:80%" />
+  <figcaption>Artisanal fishing trips in Toliara, Madagascar</figcaption>
+</figure>
+
+::::
+
+:::: {.column width="45%"}
+
+
+Mostly unsupervised
+
+<figure>
+  <img src="traj_seg_booby_black.png" alt="at the beginning is" style="width:80%" />
+    <figcaption>Peruvian booby  data courtesy of Sophie Bertrand.</figcaption>
+</figure>
+
+::::
+:::
+
+
+<!-- ## Ecological questions: Understanding space use -->
+
+
+
+<!-- ::: {.columns} -->
+<!-- :::: {.column width="48%"} -->
+
+<!-- <figure> -->
+<!--   <img src="Dives_furseals.png" alt="at the beginning is" style="width:100%" class = "centerimg" /> -->
+<!--   <figcaption>Spatial dives repartition, from `r Citep(myBib, "johnson2011bayesian")`</figcaption> -->
+<!-- </figure> -->
+
+<!-- :::: -->
+
+<!-- :::: {.column width="48%"} -->
+
+<!-- ### and the link with environmental characteristics -->
+
+<!-- <figure> -->
+<!--   <img src="SSL_covs.png" alt="at the beginning is" style="width:100%" class = "centerimg" /> -->
+<!--   <figcaption>Sea Lions habitat description</figcaption> -->
+<!-- </figure> -->
+
+
+<!-- :::: -->
+
+<!-- ::: -->
+
+
+## From Movement Data to Movement Model 
+
+
+Often analysed using discrete time model  `r Citep(myBib, "mcclintock2014discrete")` and typically  [Hidden Markov Model]{.rouge}
+
+
+<figure>
+  <img src="movement_graph.png" alt="at the beginning is" style="width:70%" class = "centerimg" />
+  <figcaption>Movement decomposition</figcaption>
+</figure>
+
+
+
+
+##  Heterogeneity in movement pattern interpretated as different internal states
+
+
+
+::: {.columns}
+:::: {.column width="48%"}
+
+<figure>
+  <img src="traj_seg_booby.png" alt="at the beginning is" style="width:90%" class = "centerimg" />
+  <figcaption>Peruvian booby  data courtesy of Sophie Bertrand</figcaption>
+</figure>
+
+<figure>
+  <img src="move_decomposition.png" alt="at the beginning is" style="width:50%" class = "centerimg" />
+  <figcaption>Movement decomposition</figcaption>
+</figure>
+
+
+
+::::
+
+:::: {.column width="48%"}
+
+```{r illust_profil_1, echo = FALSE, eval = TRUE}
+set.seed(6)
+N <- 200
+change.point <- round(cumsum(rexp(N, rate = 0.03)+10))
+change.point <- change.point[which(change.point<N)]
+
+## state sequence
+l1 <- Reduce("+", lapply(c(1,change.point), function(d){
+ return( 1*(d<=(1:N) ))}))
+
+Nchange <- length(change.point)
+mu_1 <-rnorm(Nchange+1, mean=5, sd=2)
+mu_2 <-rnorm(Nchange+1, mean=0, sd=pi/4)
+sigma_1 <- 1/rgamma(Nchange+1, shape = 20,rate = 10)
+sigma_2 <- 1/rgamma(Nchange+1, shape = 40,rate = 20)
+signal_1 <- rnorm(N, mean=mu_1[l1], sd=sigma_1[l1])
+signal_2 <- rnorm(N, mean=mu_2[l1], sd=sigma_2[l1])
+traj_dta <- tibble(desc1 =signal_1, desc2= signal_2, seg = l1, index = 1:N) %>% mutate(mu1 = mu_1[l1], mu2 =mu_2[l1])
+p1 <- traj_dta %>%  ggplot() + aes(x= index, y =desc1) + geom_point(col= "#C94326") + xlab("")
+p2 <- traj_dta %>%  ggplot() + aes(x= index, y =desc2) + geom_point(col= "#33658A") + xlab("")
+p_complete <-ggarrange(p1,p2, nrow = 2 )
+p_complete
+```
+
+
+::::
+
+:::
+
+
+
+
+##  Heterogeneity in movement pattern interpretated as different internal states
+
+
+
+::: {.columns}
+:::: {.column width="48%"}
+
+<figure>
+  <img src="traj_seg_booby.png" alt="at the beginning is" style="width:90%" class = "centerimg" />
+  <figcaption>Peruvian booby  data courtesy of Sophie Bertrand</figcaption>
+</figure>
+
+<figure>
+  <img src="move_decomposition.png" alt="at the beginning is" style="width:50%" class = "centerimg" />
+  <figcaption>Movement decomposition</figcaption>
+</figure>
+
+
+
+::::
+
+:::: {.column width="48%"}
+```{r illust_profil_2, echo = FALSE}
+p1_2 <- p1 + geom_line(aes(x=index, y = mu1), col = "#C94326" )
+p2_2 <-  p2 + geom_line(aes(x=index, y = mu2), col = "#33658A" )
+p_complete_2 <-ggarrange(p1_2,p2_2, nrow = 2 )
+p_complete_2
+```
+
+
+::::
+
+:::
+
+## Accounting for internal states
+
+
+::: {.columns}
+:::: {.column width="48%"}
+
+ * Change point detection approach. `r Citep(myBib, "patin2019identifying")` based on `r Citep(myBib, "picard2007segmentation")`
+
+<figure>
+  <img src="segmentation.png" alt="at the beginning is" style="width:90%" class = "centerimg" />
+  <figcaption>Segmentation illustration `r Citep(myBib, "patin2019identifying")`</figcaption>
+</figure>
+
+
+$$\left .\begin{array}{c}
+Y_{1k} \sim f(\theta_{1\ell})\\
+Y_{2k} \sim f(\theta_{2\ell})
+\end{array} \right\rbrace \mbox{ if } k \mbox{ in region }I_{\ell}=[\tau_{\ell-1}+1,\tau_{\ell}]$$
+
+::::
+
+:::: {.column width="48%"}
+
+The best segmentation for a given number of change points L:
+$$argmin_{0< \tau_1 < \ldots < \tau_L} C(\boldsymbol{Y}) $$
+
+
+Brute force  complexity : $O(N^L)$,
+
+Dynamic Programming algorithm complexity : $O(N^2)$ or even less with pruning strategy
+
+Limitation in the choice for $f.$
+::::
+
+::: 
+
+# Latent (Hidden) variables models
+
+## A simple Latent variables models
+
+* A parametric model ($M, \thetabf$) produces $\Ybf$ and $\Zbf$.
+
+* The only observed data are $\Ybf$ while  $\Zbf$ are hidden variables.
+
+Questions are 
+
+* [Parameters:]{.bleu} Is it still possible to estimate $\thetabf$ ?
+* [Information on $\Zbf$:]{.bleu} is it possible to "reconstruct" the unobserved data $\Zbf$ ?
+
+Bayes formula is the key :
+
+$$\P(\Ybf, \Zbf)=\P(\Ybf \vert \Zbf)\P(\Zbf)=\P(\Zbf\vert \Ybf) \P(\Ybf)$$
+
+## Mixture model as a simple Latent variables model
+
+
+::: {.columns}
+:::: {.column width="48%"}
+
+Assume that the numer of states $K$ is known
+
+* [Modelling $Z$]{.bleu}: $\pi_k=\P(Z_i=k), \quad k=1,\ldots, K, \quad \sum_k \pi_k=1$
+* $Z_i \overset{i.i.d}{\sim} \Mcal(1, \pibf), \quad P(Z_{ik}=1)=\pi_k$
+* [Modelling $Y$}]{.bleu}: The $Y_i's$ are assumed to be independent  conditionnaly to $\Zbf$ : $(Y_i\vert Z_i = k) \overset{i.i.d}{\sim} f_{\gamma_k}().$
+
+::::
+
+:::: {.column width="48%"}
+
+[Model parameters $\thetabf =(\pibf, \gammabf)$]{.bleu}
+ ![](Dag2.png)
+
+:::: 
+
+:::
+
+## Mixture model as a simple Latent variables model
+
+We could assume that 
+
+* A step  $Y_k$  is a descriptor of movement between position at time $t_{k}$ and $t_{k+1}$
+* Conditionally on some hidden state $Z_k = \ell$, the distribution of $Y_k$ has some certain parametric distribution, let's say Gaussian
+
+
+[Question:]{.rouge} If $K=2$, what are $\pibf$ and $\gammabf$ ?
+
+
+## Mixture model Properties
+
+* Couples $\{(Y_i, Z_i)\}$ are i.i.d.
+
+* [Label switching]{.bleu}:  the model is invariant for any permutation of the labels $\{1,
+  \dots, K\}$ $\Rightarrow$ the mixture model has [$K!$
+    equivalent definitions]{.rouge].
+
+* Distribution of a $Y_i$:
+$$\P(Y_i)=\sum_{k=1}^K \P(Y_i, Z_i=k)= \class{bleu}{\P(Z_i=k)} \class{orange}{\P(Y_i | Z_i=k)}$$
+
+* Distribution of $\Ybf$:
+
+\begin{align}
+\P(\Ybf ; \thetabf) & = \prod_{i=1}^n \sum_{k=1}^K P(Y_i , Z_i=k;\thetabf)  \\
+&= \prod_{i=1}^n \sum_{k=1}^K \class{bleu}{\P(Z_i=k; \pibf)} \class{orange}{\P(Y_i | Z_i=k; \gammabf)} \\ 
+&= \prod_{i=1}^n \sum_{k=1}^K \class{bleu}{\pi_k} \class{orange}{f_{\gamma_k}(Y_i)} 
+\end{align}
+
+
+## Adding temporal structure : Hidden Markov Model
+
+:::::: panel-tabset
+### Markov chain model
+
+Modelling the dependence in state sequence:
+If an animal is feeding at time $i$, he has more chance to be feeding at time $i+1$ than if he was travelling at time $i$.
+$$\P(Z_{i+1}=1 \vert Z_{i}=1) \ne \P(Z_{i+1}=1 \vert Z_{i}=2)$$
+
+[Markov Chain definition]{.rouge}
+
+$\Zbf$ is a Markov chain if 
+$$P(Z_{i+1} \vert Z_{1:i}) =  P(Z_{i+1} \vert Z_{i})$$
+
+where $Z_{1:i}$ stands for $Z_{1}, \ldots, Z_i$.
+
+$\Zbf$ is completely defined by the initial distribution $\nubf$, $\nu_k=\P(Z_1=k)$ and the transition matrix $\Pibf$ 
+
+### Hidden Markov model
+
+* [Hidden States $\Zbf$ model]{.bleu}: $\Zbf$ is assumed to follow a Markov Chain model with unknown initial distribution $\nubf$ and transition matrix  $\Pibf$.
+
+* [Observations $\Ybf$ model]{.bleu}: The $Y_i's$ are assumed to be independent  conditionnaly on $\Zbf$ : $(Y_i\vert Z_i = k) \overset{i.i.d}{\sim} f_{\gamma_k}().$
+
+* [Model parameters]{.bleu} are $\thetabf=(\nubf,  \Pibf, \gammabf)$
+
+
+ ![](Dag3.png)
+
+
+### Example
+
+Define all the key elements of a hidden Markov model with 
+
+* $K= 3$ hidden states
+* Conditionnaly on $\Zbf$, $\Ybf$ are normally distributed (with $K$ different expeactation and variance)
+* Simulate Such a model with your prefered language
+
+:::::: 
+
+
+
+ 
+ 
+## Statistical inference of incomplete data models
+
+Goal : 
+
+$$(\widehat{\gammabf},\widehat{\Pibf}, \widehat{\nubf}) = \arg\max_{\gammabf, \Pibf, {\nubf}} \log P(\Ybf; \gammabf, \Pibf, \nubf)$$
+
+:::::: panel-tabset
+
+### Observed likelihood
+
+$$\log \P(\Ybf; \thetabf)  = \log  \sum_{k_1, k_N \in K^N }\P(\Ybf, \Zbf = (k_1, \ldots,k_N); \thetabf)$$ 
+* No analytical estimators. 
+
+* It is not always possible to compute since this sum typically involves $K^n$ terms : $2^{100}\approx10^{30}$
+
+* Brute force algorithm is not the way
+
+### Joint Distribution 
+
+A convenient notation $Z_{ik}=1$ if $Z_i=k$
+
+\begin{align}
+  \log \P(\Ybf, \Zbf; \thetabf) & =  \hid{\sum_k Z_{1k} \log \nu_k }\\
+      &\hid{+ \sum_{i > 1} \sum_{k, \ell}
+       Z_{i-1,k}Z_{i,\ell} \log \pi_{k\ell}} \\
+      & + \obsy{\sum_i \sum_k Z_{ik} \log f(y_i ; \gamma_k)} 
+\end{align}
+
+
+Idea : replace $Z_{ik}$ by its best guess
+
+\begin{align}
+  \E\left( \log \P(\Ybf, \Zbf; \thetabf)\vert Y_{1:N}\right)  & =  \Ehid{\sum_k\E\left( Z_{1k} \vert Y_{1:N}\right) \log \nu_k }\\
+     & \Ehid{+ \sum_{i > 1} \sum_{k, \ell}
+      \E\left( Z_{i-1,k}Z_{i,\ell}\vert Y_{1:N}\right) \log \pi_{k\ell}} \\
+     &  + \Eobsy{\sum_i \sum_k \E\left(Z_{ik}\vert Y_{1:N}\right) \log f(X_i ; \gamma_k)} 
+\end{align}
+  
+
+### EM algorithm 
+
+ Expexctation Maximization (EM) algorithm
+
+::: {.columns}
+:::: {.column width="38%"}
+
+<figure>
+  <img src="ModHier.png" alt="mod_hier" style="width:40%" class = "centerimg" />
+</figure>
+
+::::
+
+:::: {.column width="38%"}
+[Bayes Formula]{.rouge}
+
+\begin{align}
+\P(\Ybf, \Zbf;\thetabf) & = \P(\Ybf\vert \Zbf; \thetabf) P(\Zbf; \thetabf),\\
+& = \P(\Zbf\vert \Ybf; \thetabf) \P(\Ybf; \thetabf).
+\end{align}
+
+Therefore,
+\begin{align}
+\log \P(\Ybf; \thetabf) & = \log \left \lbrace \P(\Ybf, \Zbf;\thetabf) / \P(\Zbf\vert \Ybf; \thetabf) \right\rbrace\\
+& = \log \P(\Ybf, \Zbf;\thetabf) - \log \P(\Zbf\vert \Ybf; \thetabf) \\
+\end{align}
+
+For a given $\thetabf_0$, we may compute $\P_{\thetabf_0}=P(\Zbf\vert \thetabf_0, \Ybf)$ and
+\begin{align}
+\log \P(\Ybf; \thetabf) &= \class{orange}{\E_{\thetabf_0}(\log P(\Ybf, \Zbf;\thetabf))} - \E_{\thetabf_0}(\log \P(\Zbf\vert \Ybf; \thetabf))\\
+  & = \class{orange}{Q(\thetabf, \thetabf_0)} - H(\thetabf, \thetabf_0)
+  \end{align}
+:::: 
+  
+::: 
+  
+
+
+##  Expectation - Maximization algorithm
+\begin{enumerate}
+\item Phase E : \\
+Calculate  $Q(\thetabf,\thetabf^{k})$ for every $\thetabf$.
+\item Phase M :\\ Define  
+$\thetabf^{k+1}=argmax\, Q(\thetabf,\thetabf^{k})$
+
+
+##  Example : EM for Gaussian HMM 
+
+Let's compute it together
+
+
+## Exercise
+
+* Simulate the following HMM
+
+K=2, $\pi_11=0.9$, $pi_{22}=0.8$
+
+$$Y_i \vert Z_i = 1 \sim\mathcal{N}(2, 1)$$
+
+$$Y_i \vert Z_i = 2 \sim\mathcal{N}(0, 1.5)$$
+
+* Derive an EM algorithm to estimate the parameters from the siùmulated dataset.
+
+
+
+
+
