@@ -29,7 +29,7 @@ library(moveHMM)
 library(depmixS4)
 library(circular)
 knitr::opts_chunk$set(echo = TRUE, comment = NA, cache = TRUE, message = FALSE,
-                      warning = FALSE, eval = FALSE,
+                      warning = FALSE, eval = TRUE,
                       fig.align = "center")
 options(ggplot2.discrete.colour=   scale_color_manual(values = wesanderson::wes_palette(name = "Darjeeling1")) )
 couleur <-  wesanderson::wes_palette(name = "Darjeeling1")
@@ -110,9 +110,14 @@ fou_dta <- map_dfr(c('2017_04_23_SDAC05_MEIO_BR004_trip1.csv',
 zone_box <- c(-32.75, -4.7, -31.8, -3.75)
 zone_map <- ggmap::get_stamenmap(bbox = zone_box, 
                                  zoom = 10)
-traj_plot <- ggmap::ggmap(zone_map) + 
+  
+fou_dta <- fou_dta |> 
+  mutate(bird_id = str_extract(ID, pattern = "_BR[0:8]+_"))
+         
+traj_plot <- fou_dta |> 
+         ggplot() + 
     labs(x = "Longitude", y = "Latitude") +
-    geom_path(data = fou_dta, aes(x = lon, y = lat, color = ID)) +
+    geom_path( aes(x = lon, y = lat)) +
   theme(legend.position = "none", axis.text = element_blank(),
         axis.ticks = element_blank(),
         axis.title = element_blank())
@@ -347,8 +352,9 @@ ICL(moveHMM_fit)
 ```
 
 ```{r estimated_states}
-estimated_states <- moveHMM_states %>% 
-  bind_rows(depmix_states) 
+estimated_states <- moveHMM_states  |> mutate(id_point = depmix_data$id_point) |> 
+  left_join(depmix_data) |> 
+  bind_rows(depmix_states)
 ```
 
 ## Characterizing Hidden States
