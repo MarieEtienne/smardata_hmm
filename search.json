@@ -25,7 +25,7 @@
     "href": "lab_hmm.html#defining-metrics",
     "title": "Analyzing Masked Booby Movement Using HMM",
     "section": "Defining Metrics",
-    "text": "Defining Metrics\nWe aim to identify different behavioral types within the trajectory, such as foraging (associated with rapid direction changes) and goal-directed travel (characterized by straighter trajectories). Relevant metrics here are turning angle and step length, as these are biologically meaningful for these birds.\nWe fit two models differing by the considered movement metrics (and their corresponding emission distributions): - Step Length/Angle: Metrics from Morales et al. (2004), using gamma distribution for step length and von Mises distribution for angles. - Bivariate Velocity: Metrics from Gurarie, Andrews, and Laidre (2009), using two independent normal distributions."
+    "text": "Defining Metrics\nWe aim to identify different behavioral types within the trajectory, such as foraging (associated with rapid direction changes) and goal-directed travel (characterized by straighter trajectories). Relevant metrics here are turning angle and step length, as these are biologically meaningful for these birds.\nWe fit two models differing by the considered movement metrics (and their corresponding emission distributions):\n\nStep Length/Angle: Metrics from Morales et al. (2004), using gamma distribution for step length and von Mises distribution for angles.\nBivariate Velocity: Metrics from Gurarie, Andrews, and Laidre (2009), using two independent normal distributions."
   },
   {
     "objectID": "lab_hmm.html#initializing-the-algorithm",
