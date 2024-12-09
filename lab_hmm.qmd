@@ -79,9 +79,10 @@ theme_set(theme_bw() +
 
 We focus on studying the behavior of Red-footed Boobies (*Sula sula*).
 
+
 Our dataset consists of three trajectories recorded for three Red-footed
 Boobies from Ilha do Meio, a Brazilian island part of the Fernando de
-Noronha archipelago in the Atlantic Ocean.
+Noronha archipelago in the Atlantic Ocean. [trip1](trip1.csv), [trip2](trip2.csv), [trip3](trip3.csv),
 
 ```{r read_data}
 fou_dta <- map_dfr(c('trip 1 .csv',
