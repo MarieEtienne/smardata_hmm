@@ -6,7 +6,8 @@ author:
     affiliation: 
       - ENSAI - CREST
     email: marie-pierre.etienne@ensai.fr
-date: "Last updated on `r format(Sys.time(), '%d %B, %Y')`"
+date: last-modified
+date-format: long
 institute: https://marieetienne.github.io/MAF/
 execute: 
   freeze: true
@@ -80,7 +81,7 @@ scale2 <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / ( sqrt((leng
 \$\$
 :::
 
-# Ecological 
+# Ecological context
 
 ## Movement Ecology Paradigm
 
@@ -565,21 +566,21 @@ Therefore,
 
 For a given $\thetabf_0$, we may compute $\P_{\thetabf_0}=P(\Zbf\vert \thetabf_0, \Ybf)$ and
 \begin{align}
-\log \P(\Ybf; \thetabf) &= \class{orange}{\E_{\thetabf_0}(\log P(\Ybf, \Zbf;\thetabf))} - \E_{\thetabf_0}(\log \P(\Zbf\vert \Ybf; \thetabf))\\
+\log \P(\Ybf; \thetabf) &= \class{orange}{\E_{\thetabf_0}(\log P(\Ybf, \Zbf;\thetabf)\vert \Ybf)} - \E_{\thetabf_0}(\log \P(\Zbf\vert \Ybf; \thetabf)\vert \Ybf)\\
   & = \class{orange}{Q(\thetabf, \thetabf_0)} - H(\thetabf, \thetabf_0)
   \end{align}
 :::: 
   
 ::: 
   
-
+::::::
 
 ##  Expectation - Maximization algorithm
-\begin{enumerate}
-\item Phase E : \\
-Calculate  $Q(\thetabf,\thetabf^{k})$ for every $\thetabf$.
-\item Phase M :\\ Define  
-$\thetabf^{k+1}=argmax\, Q(\thetabf,\thetabf^{k})$
+
+* Phase E :
+Calculate  $$Q(\thetabf,\thetabf^{k})$$ for every $\thetabf$.
+* Phase M : Define  
+$$\thetabf^{k+1}=argmax\, Q(\thetabf,\thetabf^{k})$$
 
 
 ##  Example : EM for Gaussian HMM 
@@ -597,9 +598,83 @@ $$Y_i \vert Z_i = 1 \sim\mathcal{N}(2, 1)$$
 
 $$Y_i \vert Z_i = 2 \sim\mathcal{N}(0, 1.5)$$
 
-* Derive an EM algorithm to estimate the parameters from the siùmulated dataset.
+* Derive an EM algorithm to estimate the parameters from the simulated dataset.
 
 
+## Baum Welch algorithm
 
+:::::: panel-tabset
 
+### Algorithm presentation
+
+Initialisation of $\thetabf^{(0)}=(\Pi, \gamma_1, ..., \gamma_K)^{(0)}$.
+
+While the convergence is not reached 
+
+* [E-step]  Calculation of 
+  
+    \begin{align}
+        \tau^{(\ell)}_{i}(k)&=\E [Z_{ik}| \Ybf, \thetabf^{(\ell-1)}] = \P(Z_i = k | \Ybf, \thetabf^{(\ell-1)})\\
+        \xi^{(\ell)}_{i}(k,h) &= \E [Z_{i-1,k}Z_{ih}| \Ybf, \thetabf^{(\ell-1)}]\\
+    \end{align} 
+    
+  [Smart algorithm Forward-Backward algorithm]{.rouge}
+      
+* [M-step] Maximization in $\thetabf=(\pibf, \gammabf)$ of
+
+$$\sum_k \tau^{(\ell)}_{1}(k)\log \nu_k  + \sum_{i > 1} \sum_{k, h} \xi^{(\ell)}_{i}(k,h) \log \pi_{kh}+ \sum_i \sum_k \tau^{(\ell)}_{i}(k) \log f(y_i; \gamma_k)$$
+
+###  M step
+
+  Transition estimation
+  $$\hat{\Pi}_{kh} = \frac{\sum_{i=1}^{N-1}{\E[Z_{i-1,k}Z_{ih}\vert Y_{0:n}]}}{\sum_{i=1}^{N-1}{\E[Z_{i-1,k}]}}= \frac{\sum_{i=1}^{N-1}\xi^{(\ell)}_{i}(k,h)}{\sum_{i=1}^{N-1}\tau^{(\ell)}_{i}(k)}$$
+
+If Gaussian emissions:
+  \begin{align}
+  \hat{\mu}_k & = \frac{\sum_{i=1}^N\E[Z_{i,k}\vert Y_{1:N}]  Y_i}{\sum_{i=1}^{N}{\E[Z_{i,k}\vert Y_{1:N}]}} = \frac{\sum_{i=1}^N \tau^{(\ell)}_{i}(k)  Y_i}{\sum_{i=1}^{N}{\tau^{(\ell)}_{i}(k)}}\\
+  \hat{\sigma}_k^2 & = \frac{\sum_{i=1}^N \tau^{(\ell)}_{i}(k)  (Y_i-\hat{\mu_i})^2 }{\sum_{i=1}^{N}{\tau^{(\ell)}_{i}(k)}} 
+  \end{align}
+ 
+ [Problem:]{.rouge} Computing $\tau^{(\ell)}_{i}(k)= \E[Z_{i,k}\vert Y_{1:N}]$ and $\xi^{(\ell)}_{i}(k,h)=\E[Z_{i-1,k}Z_{ih}\vert Y_{1:N}]$
+ 
+ 
+
+### Forward Backward 
+
+recursion to compute  $\tau^{(\ell)}_{i}(k)$ and $\xi^{(\ell)}_{i}(k,h)}=\E[Z_{i-1,k}Z_{ih}\vert Y_{1:N}]$
+
+$$E(Z_{ik}\vert \Ybf) \quad \text{and} \quad E(Z_{ik}Z_{j\ell}\vert \Ybf).$$
+
+::: {.columns}
+:::: {.column width="45%"}
+
+ Forward
+   $$\alpha_n(i)=\P_{\thetabf}\left( Y_{0:n}, Z_n=i\right)$$
+  
+  *  Initialisation $\alpha_0(i)=\nu(i)f_{\gamma_i}(y_0)$
+  
+  * for $n=1,\ldots, N-1$
+    $$\alpha_{n+1}(i)= \left(\sum_{k=1}^K \alpha_n(k) \Pi_{ki}\right) f_{\tau_i}(y_{n+1})$$
+  
+  * Termination 
+   $$\P(Y_{0:N})=\sum_{k=1}^K(\alpha_N(k))$$
+
+::::
+:::: {.column width="45%"}
+
+Backward
+$$\beta_n(i)=\P_{\thetabf}\left( Y_{n+1:N}\vert Z_n=i\right)$$
+
+*  Initialisation  \textcolor{darkorange}{$\beta_N(i)=1$}
+
+* for $n=1,\ldots, N-1$ $$\beta_{n}(i)= \left(\sum_{k=1}^K \Pi_{ik} f_{\gamma_k}(y_{n+1})\beta_{n+1}(k) \right) $$
+
+* Termination $$\P(Y_{0:N})=\sum_{j,k=1}^K(\beta_0(j) f_{\gamma_k}(y_0) \Pi_{kj} \nu(k))$$
+
+::::
+:::
+
+::::::
+
+## State decoding : Viterbi Algorithm
 
