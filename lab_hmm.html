@@ -247,86 +247,139 @@ div.csl-indent {
 </header>
 
 
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"rnaturalearth"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'nlme'
+
+The following object is masked from 'package:dplyr':
+
+    collapse</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="at">file =</span> <span class="st">'utils_HMM.R'</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="at">file =</span> <span class="st">'ICL.R'</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(moveHMM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: CircStats
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following object is masked from 'package:dplyr':
+
+    select
+
+Loading required package: boot</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(depmixS4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: nnet
+Loading required package: Rsolnp
+
+Attaching package: 'depmixS4'
+
+The following objects are masked from 'package:moveHMM':
+
+    stationary, viterbi</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(circular)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'circular'
+
+The following objects are masked from 'package:CircStats':
+
+    A1, A1inv, deg, I.0, I.1, I.p, pp.plot, rad, rose.diag, rstable
+
+The following objects are masked from 'package:stats':
+
+    sd, var</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> <span class="cn">TRUE</span>, <span class="at">comment =</span> <span class="cn">NA</span>, <span class="at">cache =</span> <span class="cn">TRUE</span>, <span class="at">message =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">warning =</span> <span class="cn">FALSE</span>, <span class="at">eval =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">fig.align =</span> <span class="st">"center"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">ggplot2.discrete.colour=</span>   <span class="fu">scale_color_manual</span>(<span class="at">values =</span> wesanderson<span class="sc">::</span><span class="fu">wes_palette</span>(<span class="at">name =</span> <span class="st">"Darjeeling1"</span>)) )</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>couleur <span class="ot">&lt;-</span>  wesanderson<span class="sc">::</span><span class="fu">wes_palette</span>(<span class="at">name =</span> <span class="st">"Darjeeling1"</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>scale2 <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">na.rm =</span> <span class="cn">FALSE</span>) (x <span class="sc">-</span> <span class="fu">mean</span>(x, <span class="at">na.rm =</span> na.rm)) <span class="sc">/</span> ( <span class="fu">sqrt</span>((<span class="fu">length</span>(x)<span class="sc">-</span><span class="dv">1</span>) <span class="sc">/</span> <span class="fu">length</span>(x)) <span class="sc">*</span><span class="fu">sd</span>(x, na.rm) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="hidden">
 <p>$$</p>
 <p>$$</p>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">ggplot2.continuous.colour=</span><span class="st">"viridis"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>scale_colour_discrete <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(..., <span class="at">values=</span><span class="fu">c</span>(wesanderson<span class="sc">::</span><span class="fu">wes_palette</span>(<span class="st">"Darjeeling1"</span>), <span class="st">"darkgreen"</span>))</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>scale_fill_discrete <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(..., <span class="at">values=</span><span class="fu">c</span>(wesanderson<span class="sc">::</span><span class="fu">wes_palette</span>(<span class="st">"Darjeeling1"</span>), <span class="st">"darkgreen"</span>))</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">theme</span>(</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">fill =</span> <span class="fu">rgb</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">panel.grid =</span> <span class="fu">element_line</span>(<span class="at">linetype =</span> <span class="dv">2</span>),</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>              <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),<span class="co"># bg around panel</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"LM Roman 10"</span>, <span class="at">size =</span> <span class="dv">12</span>, <span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>              <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">1.1</span>)),</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>              <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="dv">1</span>)),</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">1.1</span>)),</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>              <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="fu">rel</span>(<span class="dv">1</span>)),</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>              <span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"lightgoldenrod1"</span>),</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>              <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">1.2</span>), <span class="at">hjust =</span> <span class="fl">0.5</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="data-presentation" class="level2">
 <h2 class="anchored" data-anchor-id="data-presentation">Data Presentation</h2>
 <p>We focus on studying the behavior of Red-footed Boobies (<em>Sula sula</em>).</p>
 <p>Our dataset consists of three trajectories recorded for three Red-footed Boobies from Ilha do Meio, a Brazilian island part of the Fernando de Noronha archipelago in the Atlantic Ocean.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fou_dta <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(<span class="fu">c</span>(<span class="st">'trip 1 .csv'</span>,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                     <span class="st">'trip 2 .csv'</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                     <span class="st">'trip 3 .csv'</span>),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                   <span class="cf">function</span>(f_){</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                     ID <span class="ot">&lt;-</span> f_ <span class="sc">%&gt;%</span> </span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                       stringr<span class="sc">::</span><span class="fu">str_split</span>( <span class="st">' '</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_subset</span>(<span class="st">'BR'</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">read_delim</span>(<span class="at">file =</span> <span class="fu">file.path</span>(<span class="st">"../data/Fou_sophie/2017"</span>, f_ ),</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                                <span class="at">delim =</span> <span class="st">";"</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                                <span class="at">trim_ws =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                       dplyr<span class="sc">::</span><span class="fu">select</span>(id, vol, datetime,  alt, lat, lon, dist.nid) <span class="sc">%&gt;%</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">rename</span>(<span class="at">id_loc =</span> id)  <span class="sc">%&gt;%</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">mutate</span>(<span class="at">ID =</span> ID) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">rowid_to_column</span>(<span class="at">var =</span> <span class="st">"time_step"</span>)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                   })  <span class="sc">%&gt;%</span> </span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dist_scaled =</span> <span class="fu">scale</span>(dist.nid),</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">dist_scaled_sq =</span> dist_scaled<span class="sc">^</span><span class="dv">2</span>,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">alt_scaled =</span> <span class="fu">scale</span>(alt))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fou_dta <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(<span class="fu">c</span>(<span class="st">'trip 1 .csv'</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                     <span class="st">'trip 2 .csv'</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                     <span class="st">'trip 3 .csv'</span>),</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                   <span class="cf">function</span>(f_){</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                     ID <span class="ot">&lt;-</span> f_ <span class="sc">%&gt;%</span> </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                       stringr<span class="sc">::</span><span class="fu">str_split</span>( <span class="st">' '</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> stringr<span class="sc">::</span><span class="fu">str_subset</span>(<span class="st">'BR'</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">read_delim</span>(<span class="at">file =</span> <span class="fu">file.path</span>(<span class="st">"../data/Fou_sophie/2017"</span>, f_ ),</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                                <span class="at">delim =</span> <span class="st">";"</span>, <span class="at">escape_double =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                                <span class="at">trim_ws =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>                       dplyr<span class="sc">::</span><span class="fu">select</span>(id, vol, datetime,  alt, lat, lon, dist.nid) <span class="sc">%&gt;%</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">rename</span>(<span class="at">id_loc =</span> id)  <span class="sc">%&gt;%</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">mutate</span>(<span class="at">ID =</span> ID) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">rowid_to_column</span>(<span class="at">var =</span> <span class="st">"time_step"</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>                   })  <span class="sc">%&gt;%</span> </span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dist_scaled =</span> <span class="fu">scale</span>(dist.nid),</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">dist_scaled_sq =</span> dist_scaled<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">alt_scaled =</span> <span class="fu">scale</span>(alt))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>zone_box <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">32.75</span>, <span class="sc">-</span><span class="fl">4.7</span>, <span class="sc">-</span><span class="fl">31.8</span>, <span class="sc">-</span><span class="fl">3.75</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>zone_map <span class="ot">&lt;-</span> ggmap<span class="sc">::</span><span class="fu">get_stamenmap</span>(<span class="at">bbox =</span> zone_box, </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">zoom =</span> <span class="dv">10</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>traj_plot <span class="ot">&lt;-</span> ggmap<span class="sc">::</span><span class="fu">ggmap</span>(zone_map) <span class="sc">+</span> </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Longitude"</span>, <span class="at">y =</span> <span class="st">"Latitude"</span>) <span class="sc">+</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_path</span>(<span class="at">data =</span> fou_dta, <span class="fu">aes</span>(<span class="at">x =</span> lon, <span class="at">y =</span> lat, <span class="at">color =</span> ID)) <span class="sc">+</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>, <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>zone_box <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">32.75</span>, <span class="sc">-</span><span class="fl">4.7</span>, <span class="sc">-</span><span class="fl">31.8</span>, <span class="sc">-</span><span class="fl">3.75</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>zone_map <span class="ot">&lt;-</span> ggmap<span class="sc">::</span><span class="fu">get_stamenmap</span>(<span class="at">bbox =</span> zone_box, </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">zoom =</span> <span class="dv">10</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>traj_plot <span class="ot">&lt;-</span> ggmap<span class="sc">::</span><span class="fu">ggmap</span>(zone_map) <span class="sc">+</span> </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Longitude"</span>, <span class="at">y =</span> <span class="st">"Latitude"</span>) <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_path</span>(<span class="at">data =</span> fou_dta, <span class="fu">aes</span>(<span class="at">x =</span> lon, <span class="at">y =</span> lat, <span class="at">color =</span> ID)) <span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>, <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>world <span class="ot">&lt;-</span> <span class="fu">ne_countries</span>(<span class="at">scale =</span> <span class="st">"medium"</span>, <span class="at">returnclass =</span> <span class="st">"sf"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_crop</span>(<span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">90</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">60</span>, <span class="at">xmax =</span> <span class="sc">-</span><span class="dv">30</span>, <span class="at">ymax =</span> <span class="dv">15</span>))</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>zone_contour <span class="ot">&lt;-</span>  fou_dta <span class="sc">%&gt;%</span> </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>, <span class="st">"lat"</span>) ) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_set_crs</span>(<span class="dv">4326</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_bbox</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sfc</span>()</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>world_plot <span class="ot">&lt;-</span> world  <span class="sc">%&gt;%</span>  </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">"#c9d0a3"</span>) <span class="sc">+</span> </span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> zone_contour, <span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#99b3cc"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>world <span class="ot">&lt;-</span> <span class="fu">ne_countries</span>(<span class="at">scale =</span> <span class="st">"medium"</span>, <span class="at">returnclass =</span> <span class="st">"sf"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_crop</span>(<span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">90</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">60</span>, <span class="at">xmax =</span> <span class="sc">-</span><span class="dv">30</span>, <span class="at">ymax =</span> <span class="dv">15</span>))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>zone_contour <span class="ot">&lt;-</span>  fou_dta <span class="sc">%&gt;%</span> </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>, <span class="st">"lat"</span>) ) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_set_crs</span>(<span class="dv">4326</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_bbox</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sfc</span>()</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>world_plot <span class="ot">&lt;-</span> world  <span class="sc">%&gt;%</span>  </span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">"#c9d0a3"</span>) <span class="sc">+</span> </span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> zone_contour, <span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#99b3cc"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(world_plot, traj_plot, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(world_plot, traj_plot, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="projection" class="level2">
@@ -334,15 +387,15 @@ div.csl-indent {
 <p>The data for this booby are specified in latitude and longitude, which means they are based on angular coordinates on Earth’s surface. Methods described earlier rely on distance metrics (e.g., step lengths). While it’s possible to compute traveled distances using latitude and longitude, this involves formulas specific to spherical movements.</p>
 <p>To circumvent this and use Euclidean distance, data are often projected into a local system. This projection must match the region of interest. Here, we use UTM coordinates for Zone 25 South. Geographic data manipulation is made easier in R using the <code>sf</code> package, which we use to project the data for easier distance calculations.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fou_dta_utm <span class="ot">&lt;-</span> fou_dta <span class="sc">%&gt;%</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>, <span class="st">"lat"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dist_scaled =</span> <span class="fu">scale</span>(dist.nid),</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">dist_scaled_sq =</span> dist_scaled<span class="sc">^</span><span class="dv">2</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">alt_scaled =</span> <span class="fu">scale</span>(alt)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_set_crs</span>(<span class="dv">4326</span>)  <span class="sc">%&gt;%</span> </span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">32725</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Easting =</span> <span class="fu">st_coordinates</span>(.)[,<span class="st">"X"</span>],</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">Northing =</span> <span class="fu">st_coordinates</span>(.)[,<span class="st">"Y"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fou_dta_utm <span class="ot">&lt;-</span> fou_dta <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>, <span class="st">"lat"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dist_scaled =</span> <span class="fu">scale</span>(dist.nid),</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">dist_scaled_sq =</span> dist_scaled<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">alt_scaled =</span> <span class="fu">scale</span>(alt)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_set_crs</span>(<span class="dv">4326</span>)  <span class="sc">%&gt;%</span> </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">32725</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Easting =</span> <span class="fu">st_coordinates</span>(.)[,<span class="st">"X"</span>],</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">Northing =</span> <span class="fu">st_coordinates</span>(.)[,<span class="st">"Y"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="smoothing-the-data" class="level1">
@@ -351,18 +404,18 @@ div.csl-indent {
 <p>To correct for these errors, we define a simple Gaussian linear hidden Markov model, as discussed earlier. The hidden dynamics are modeled as a random walk with an unknown innovation matrix, and the observation model assumes a Gaussian distribution centered on the true position with an unknown diagonal variance. The parameters are estimated using the EM algorithm in the <code>MARSS</code> package, and Kalman smoothing is used to estimate the true trajectory.</p>
 <p>A smoothed trajectory preview is shown in the figure below, illustrating how smoothing reduces trajectory irregularities. However, note that this transformation involves working with modified data, whose relevance may vary in specific cases.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fou_dta_utm_smoothed <span class="sc">%&gt;%</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Easting, Easting_smoothed, Northing, Northing_smoothed) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(<span class="at">col =</span> <span class="st">"Raw"</span>, Easting, Northing, <span class="at">sep =</span> <span class="st">"-"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(<span class="at">col =</span> <span class="st">"Smoothed"</span>, Easting_smoothed, Northing_smoothed, <span class="at">sep =</span> <span class="st">"-"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">"Trajectory"</span>, <span class="at">value =</span> <span class="st">"Coordinates"</span>, <span class="at">factor_key =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(<span class="at">col =</span> Coordinates, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"Longitude"</span>, <span class="st">"Latitude"</span>), <span class="at">sep =</span> <span class="st">"-"</span>, <span class="at">convert =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Trajectory =</span> <span class="fu">factor</span>(Trajectory, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Raw"</span>, <span class="st">"Smoothed"</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Longitude, <span class="at">y =</span> Latitude, <span class="at">color =</span> Trajectory) <span class="sc">+</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>() <span class="sc">+</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">955</span>, <span class="dv">956</span>) <span class="sc">*</span> <span class="fl">1e4</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">575</span>, <span class="dv">580</span>) <span class="sc">*</span> <span class="fl">1e3</span>) <span class="sc">+</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(), <span class="at">axis.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>fou_dta_utm_smoothed <span class="sc">%&gt;%</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Easting, Easting_smoothed, Northing, Northing_smoothed) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(<span class="at">col =</span> <span class="st">"Raw"</span>, Easting, Northing, <span class="at">sep =</span> <span class="st">"-"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(<span class="at">col =</span> <span class="st">"Smoothed"</span>, Easting_smoothed, Northing_smoothed, <span class="at">sep =</span> <span class="st">"-"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">"Trajectory"</span>, <span class="at">value =</span> <span class="st">"Coordinates"</span>, <span class="at">factor_key =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(<span class="at">col =</span> Coordinates, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"Longitude"</span>, <span class="st">"Latitude"</span>), <span class="at">sep =</span> <span class="st">"-"</span>, <span class="at">convert =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Trajectory =</span> <span class="fu">factor</span>(Trajectory, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Raw"</span>, <span class="st">"Smoothed"</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Longitude, <span class="at">y =</span> Latitude, <span class="at">color =</span> Trajectory) <span class="sc">+</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>() <span class="sc">+</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">955</span>, <span class="dv">956</span>) <span class="sc">*</span> <span class="fl">1e4</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">575</span>, <span class="dv">580</span>) <span class="sc">*</span> <span class="fl">1e3</span>) <span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(), <span class="at">axis.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="fitting-a-three-state-model" class="level1">
@@ -381,94 +434,94 @@ div.csl-indent {
 <h2 class="anchored" data-anchor-id="initializing-the-algorithm">Initializing the Algorithm</h2>
 <p>These models without covariates have 18 parameters (12 for emission distributions and 6 for transition probabilities). Optimization in such a parameter space is sensitive to initial values. We use a simple k-means classification to find plausible initial parameters for the regimes.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>moveHMM_data <span class="ot">&lt;-</span> fou_dta_utm_smoothed <span class="sc">%&gt;%</span> </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowid_to_column</span>(<span class="at">var =</span> <span class="st">"id_point"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID, id_point, time_step, Easting, Northing, Easting_smoothed, Northing_smoothed, </span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                alt_scaled, dist_scaled, dist_scaled_sq) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  moveHMM<span class="sc">::</span><span class="fu">prepData</span>(<span class="at">type =</span> <span class="st">"UTM"</span>, <span class="at">coordNames =</span> <span class="fu">c</span>(<span class="st">"Easting_smoothed"</span>, <span class="st">"Northing_smoothed"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>moveHMM_data <span class="ot">&lt;-</span> fou_dta_utm_smoothed <span class="sc">%&gt;%</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowid_to_column</span>(<span class="at">var =</span> <span class="st">"id_point"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID, id_point, time_step, Easting, Northing, Easting_smoothed, Northing_smoothed, </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                alt_scaled, dist_scaled, dist_scaled_sq) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  moveHMM<span class="sc">::</span><span class="fu">prepData</span>(<span class="at">type =</span> <span class="st">"UTM"</span>, <span class="at">coordNames =</span> <span class="fu">c</span>(<span class="st">"Easting_smoothed"</span>, <span class="st">"Northing_smoothed"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>depmix_data <span class="ot">&lt;-</span> moveHMM_data <span class="sc">%&gt;%</span> </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">v_p =</span> step <span class="sc">*</span> <span class="fu">cos</span>(angle), <span class="at">v_r =</span> step <span class="sc">*</span> <span class="fu">sin</span>(angle)) <span class="sc">%&gt;%</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replace_na</span>(<span class="fu">list</span>(<span class="at">angle =</span> <span class="dv">0</span>, <span class="at">v_r =</span> <span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">v_p =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(v_p), step, v_p))</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>n_times <span class="ot">&lt;-</span> depmix_data <span class="sc">%&gt;%</span> </span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_times =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(n_times)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>depmix_data <span class="ot">&lt;-</span> moveHMM_data <span class="sc">%&gt;%</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">v_p =</span> step <span class="sc">*</span> <span class="fu">cos</span>(angle), <span class="at">v_r =</span> step <span class="sc">*</span> <span class="fu">sin</span>(angle)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replace_na</span>(<span class="fu">list</span>(<span class="at">angle =</span> <span class="dv">0</span>, <span class="at">v_r =</span> <span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">v_p =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(v_p), step, v_p))</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>n_times <span class="ot">&lt;-</span> depmix_data <span class="sc">%&gt;%</span> </span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ID) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_times =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(n_times)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(depmixS4)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"utils_HMM.R"</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>initial_model <span class="ot">&lt;-</span> depmixS4<span class="sc">::</span><span class="fu">depmix</span>(<span class="fu">list</span>(v_p <span class="sc">~</span> <span class="dv">1</span>, v_r <span class="sc">~</span> <span class="dv">1</span>), <span class="at">data =</span> depmix_data, </span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">nstates =</span> n_states,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">family =</span> <span class="fu">list</span>(<span class="fu">gaussian</span>(), <span class="fu">gaussian</span>()), <span class="at">ntimes =</span> n_times,</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">respstart =</span> <span class="fu">get_init_depmix</span>(depmix_data, <span class="at">nbStates =</span> n_states),</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">initdata =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span>n_states, n_states),</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">transition =</span> <span class="sc">~</span> <span class="dv">1</span>)</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>depmix_fit <span class="ot">&lt;-</span> depmixS4<span class="sc">::</span><span class="fu">fit</span>(initial_model, <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">emcontrol =</span> <span class="fu">em.control</span>(<span class="at">crit =</span> <span class="st">"relative"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(depmixS4)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"utils_HMM.R"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>initial_model <span class="ot">&lt;-</span> depmixS4<span class="sc">::</span><span class="fu">depmix</span>(<span class="fu">list</span>(v_p <span class="sc">~</span> <span class="dv">1</span>, v_r <span class="sc">~</span> <span class="dv">1</span>), <span class="at">data =</span> depmix_data, </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">nstates =</span> n_states,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">family =</span> <span class="fu">list</span>(<span class="fu">gaussian</span>(), <span class="fu">gaussian</span>()), <span class="at">ntimes =</span> n_times,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">respstart =</span> <span class="fu">get_init_depmix</span>(depmix_data, <span class="at">nbStates =</span> n_states),</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">initdata =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span>n_states, n_states),</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">transition =</span> <span class="sc">~</span> <span class="dv">1</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>depmix_fit <span class="ot">&lt;-</span> depmixS4<span class="sc">::</span><span class="fu">fit</span>(initial_model, <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">emcontrol =</span> <span class="fu">em.control</span>(<span class="at">crit =</span> <span class="st">"relative"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>rank_vector_depmix <span class="ot">&lt;-</span>  <span class="fu">posterior</span>(depmix_fit) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(state) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">step =</span> depmix_data<span class="sc">$</span>step) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_step =</span> <span class="fu">mean</span>(step, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(state) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(mean_step) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rank</span>()</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>depmix_states <span class="ot">&lt;-</span> <span class="fu">posterior</span>(depmix_fit) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Predicted_state =</span> state) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Predicted_state =</span> rank_vector_depmix[Predicted_state] <span class="sc">%&gt;%</span> </span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>           <span class="fu">factor</span>(<span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span>n_states)) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(depmix_data, .) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">metric =</span> <span class="st">"Bivariate Velocity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>rank_vector_depmix <span class="ot">&lt;-</span>  <span class="fu">posterior</span>(depmix_fit) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(state) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">step =</span> depmix_data<span class="sc">$</span>step) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_step =</span> <span class="fu">mean</span>(step, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(state) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(mean_step) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rank</span>()</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>depmix_states <span class="ot">&lt;-</span> <span class="fu">posterior</span>(depmix_fit) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Predicted_state =</span> state) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Predicted_state =</span> rank_vector_depmix[Predicted_state] <span class="sc">%&gt;%</span> </span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>           <span class="fu">factor</span>(<span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span>n_states)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(depmix_data, .) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">metric =</span> <span class="st">"Bivariate Velocity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>par_init_moveHMM <span class="ot">&lt;-</span> <span class="fu">get_init_moveHMM</span>(<span class="at">dta =</span> moveHMM_data, <span class="at">nbStates =</span> n_states)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>moveHMM_fit <span class="ot">&lt;-</span> moveHMM<span class="sc">::</span><span class="fu">fitHMM</span>(<span class="at">data =</span> moveHMM_data, <span class="at">nbStates =</span> n_states, </span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">stepPar0 =</span> par_init_moveHMM<span class="sc">$</span>stepPar0,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">anglePar0 =</span> par_init_moveHMM<span class="sc">$</span>anglePar0,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                               <span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>par_init_moveHMM <span class="ot">&lt;-</span> <span class="fu">get_init_moveHMM</span>(<span class="at">dta =</span> moveHMM_data, <span class="at">nbStates =</span> n_states)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>moveHMM_fit <span class="ot">&lt;-</span> moveHMM<span class="sc">::</span><span class="fu">fitHMM</span>(<span class="at">data =</span> moveHMM_data, <span class="at">nbStates =</span> n_states, </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">stepPar0 =</span> par_init_moveHMM<span class="sc">$</span>stepPar0,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">anglePar0 =</span> par_init_moveHMM<span class="sc">$</span>anglePar0,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>                               <span class="at">formula =</span> <span class="sc">~</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>rank_vector_moveHMM <span class="ot">&lt;-</span>  <span class="fu">tibble</span>(<span class="at">state =</span> moveHMM<span class="sc">::</span><span class="fu">viterbi</span>(moveHMM_fit)) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">step =</span> depmix_data<span class="sc">$</span>step) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_step =</span> <span class="fu">mean</span>(step, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(state) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(mean_step) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rank</span>()</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>moveHMM_states <span class="ot">&lt;-</span> moveHMM<span class="sc">::</span><span class="fu">stateProbs</span>(moveHMM_fit) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Predicted_state =</span> rank_vector_moveHMM[moveHMM<span class="sc">::</span><span class="fu">viterbi</span>(moveHMM_fit)] <span class="sc">%&gt;%</span> </span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>           <span class="fu">factor</span>(<span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span>n_states)) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">metric =</span> <span class="st">"Step Length/Angle"</span>)</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ICL</span>(moveHMM_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>rank_vector_moveHMM <span class="ot">&lt;-</span>  <span class="fu">tibble</span>(<span class="at">state =</span> moveHMM<span class="sc">::</span><span class="fu">viterbi</span>(moveHMM_fit)) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">step =</span> depmix_data<span class="sc">$</span>step) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_step =</span> <span class="fu">mean</span>(step, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(state) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(mean_step) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rank</span>()</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>moveHMM_states <span class="ot">&lt;-</span> moveHMM<span class="sc">::</span><span class="fu">stateProbs</span>(moveHMM_fit) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Predicted_state =</span> rank_vector_moveHMM[moveHMM<span class="sc">::</span><span class="fu">viterbi</span>(moveHMM_fit)] <span class="sc">%&gt;%</span> </span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>           <span class="fu">factor</span>(<span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span>n_states)) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">metric =</span> <span class="st">"Step Length/Angle"</span>)</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ICL</span>(moveHMM_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>estimated_states <span class="ot">&lt;-</span> moveHMM_states <span class="sc">%&gt;%</span> </span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(depmix_states) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>estimated_states <span class="ot">&lt;-</span> moveHMM_states <span class="sc">%&gt;%</span> </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(depmix_states) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="characterizing-hidden-states" class="level2">
 <h2 class="anchored" data-anchor-id="characterizing-hidden-states">Characterizing Hidden States</h2>
 <p>For both packages used, HMM parameters are estimated via maximum likelihood, and the most probable sequence of hidden states is retrieved using the Viterbi algorithm. Hidden states correspond to velocity and turning angle distributions. In trajectory terms, they describe segments between two positions (separated by 10 seconds).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>estimated_states <span class="sc">%&gt;%</span> </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ID, metric) <span class="sc">%&gt;%</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Next_East =</span> <span class="fu">lead</span>(x), <span class="at">Next_North =</span> <span class="fu">lead</span>(y)) <span class="sc">%&gt;%</span> </span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> Next_East, <span class="at">yend =</span> Next_North, <span class="at">color =</span> Predicted_state)) <span class="sc">+</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> metric) <span class="sc">+</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Predicted State"</span>) <span class="sc">+</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title =</span> <span class="fu">element_blank</span>(), <span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>estimated_states <span class="sc">%&gt;%</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ID, metric) <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Next_East =</span> <span class="fu">lead</span>(x), <span class="at">Next_North =</span> <span class="fu">lead</span>(y)) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> Next_East, <span class="at">yend =</span> Next_North, <span class="at">color =</span> Predicted_state)) <span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> metric) <span class="sc">+</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Predicted State"</span>) <span class="sc">+</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title =</span> <span class="fu">element_blank</span>(), <span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
