@@ -330,11 +330,11 @@ The following objects are masked from 'package:stats':
 <section id="data-presentation" class="level2">
 <h2 class="anchored" data-anchor-id="data-presentation">Data Presentation</h2>
 <p>We focus on studying the behavior of Red-footed Boobies (<em>Sula sula</em>).</p>
-<p>Our dataset consists of three trajectories recorded for three Red-footed Boobies from Ilha do Meio, a Brazilian island part of the Fernando de Noronha archipelago in the Atlantic Ocean. <a href="2017 04 23 SDAC05 MEIO BR004 trip 1 .csv">2017 04 23 SDAC05 MEIO BR004 trip 1 .csv</a>, <a href="2017 04 23 SDAC06 MEIO BR1705 trip 1 .csv">2017 04 23 SDAC06 MEIO BR1705 trip 1 .csv</a>, <a href="2017 04 23 SDAC08 MEIO BR1703 trip 1 .csv">2017 04 23 SDAC08 MEIO BR1703 trip 1 .csv</a>,</p>
+<p>Our dataset consists of three trajectories recorded for three Red-footed Boobies from Ilha do Meio, a Brazilian island part of the Fernando de Noronha archipelago in the Atlantic Ocean. <a href="2017_04_23_SDAC05_MEIO_BR004_trip1.csv">2017 04 23 SDAC05 MEIO BR004 trip 1 .csv</a>, <a href="2017_04_23_SDAC06_MEIO_BR1705_trip1.csv">2017 04 23 SDAC06 MEIO BR1705 trip 1 .csv</a>, <a href="2017_04_23_SDAC08_MEIO_BR1703_trip1.csv">2017 04 23 SDAC08 MEIO BR1703 trip 1 .csv</a>,</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fou_dta <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(<span class="fu">c</span>(<span class="st">' 2017 04 23 SDAC05 MEIO BR004  trip 1 .csv'</span>, </span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">' 2017 04 23 SDAC06 MEIO BR1705  trip 1 .csv'</span>,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">' 2017 04 23 SDAC08 MEIO BR1703  trip 1 .csv'</span></span>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fou_dta <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(<span class="fu">c</span>(<span class="st">'2017_04_23_SDAC05_MEIO_BR004_trip1.csv'</span>, </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">'2017_04_23_SDAC06_MEIO_BR1705_trip1.csv'</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>              <span class="st">'2017_04_23_SDAC08_MEIO_BR1703_trip1.csv'</span></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>              ),</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                   <span class="cf">function</span>(f_){</span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                       ID <span class="ot">&lt;-</span> f_ <span class="sc">%&gt;%</span> </span>
