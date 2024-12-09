@@ -16,8 +16,7 @@ editor:
 css: mpe_pres_revealjs.css
 ---
 
-```{r setup, include=FALSE, eval = TRUE}
-library(tidyverse)
+```{r setup, echo = TRUE, eval = TRUE}
 library(tidyverse)
 library(ggpubr)
 library(sf)
@@ -29,10 +28,9 @@ source(file = 'ICL.R')
 library(moveHMM)
 library(depmixS4)
 library(circular)
-knitr::opts_chunk$set(echo = FALSE, comment = NA, cache = TRUE, message = FALSE,
+knitr::opts_chunk$set(echo = TRUE, comment = NA, cache = TRUE, message = FALSE,
                       warning = FALSE, eval = FALSE,
                       fig.align = "center")
-theme_set(theme_minimal())
 options(ggplot2.discrete.colour=   scale_color_manual(values = wesanderson::wes_palette(name = "Darjeeling1")) )
 couleur <-  wesanderson::wes_palette(name = "Darjeeling1")
 scale2 <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / ( sqrt((length(x)-1) / length(x)) *sd(x, na.rm) )
@@ -53,8 +51,7 @@ scale2 <- function(x, na.rm = FALSE) (x - mean(x, na.rm = na.rm)) / ( sqrt((leng
 \$\$
 :::
 
-
-```{r ggplot_theme_set, cache = FALSE}
+```{r ggplot_theme_set, echo = FALSE, cache = FALSE}
 options(ggplot2.continuous.colour="viridis")
 scale_colour_discrete <- function(...) {
   scale_colour_manual(..., values=c(wesanderson::wes_palette("Darjeeling1"), "darkgreen"))
@@ -82,7 +79,9 @@ theme_set(theme_bw() +
 
 We focus on studying the behavior of Red-footed Boobies (*Sula sula*).
 
-Our dataset consists of three trajectories recorded for three Red-footed Boobies from Ilha do Meio, a Brazilian island part of the Fernando de Noronha archipelago in the Atlantic Ocean.
+Our dataset consists of three trajectories recorded for three Red-footed
+Boobies from Ilha do Meio, a Brazilian island part of the Fernando de
+Noronha archipelago in the Atlantic Ocean.
 
 ```{r read_data}
 fou_dta <- map_dfr(c('trip 1 .csv',
@@ -140,9 +139,18 @@ gridExtra::grid.arrange(world_plot, traj_plot, nrow = 1)
 
 ## Projection
 
-The data for this booby are specified in latitude and longitude, which means they are based on angular coordinates on Earth's surface. Methods described earlier rely on distance metrics (e.g., step lengths). While it's possible to compute traveled distances using latitude and longitude, this involves formulas specific to spherical movements.
+The data for this booby are specified in latitude and longitude, which
+means they are based on angular coordinates on Earth's surface. Methods
+described earlier rely on distance metrics (e.g., step lengths). While
+it's possible to compute traveled distances using latitude and
+longitude, this involves formulas specific to spherical movements.
 
-To circumvent this and use Euclidean distance, data are often projected into a local system. This projection must match the region of interest. Here, we use UTM coordinates for Zone 25 South. Geographic data manipulation is made easier in R using the `sf` package, which we use to project the data for easier distance calculations\footnote{Projection is critical because a degree of latitude and longitude do not correspond to the same distance. Using raw coordinates can lead to misinterpretation.}.  
+To circumvent this and use Euclidean distance, data are often projected
+into a local system. This projection must match the region of interest.
+Here, we use UTM coordinates for Zone 25 South. Geographic data
+manipulation is made easier in R using the `sf` package, which we use to
+project the data for easier distance
+calculations\footnote{Projection is critical because a degree of latitude and longitude do not correspond to the same distance. Using raw coordinates can lead to misinterpretation.}.
 
 ```{r fou_dta_sf_utm}
 fou_dta_utm <- fou_dta %>% 
@@ -158,11 +166,24 @@ fou_dta_utm <- fou_dta %>%
 
 # Smoothing the Data
 
-Data here are acquired at high frequency (one point every 10 seconds). Although GPS data have minimal error, the close temporal spacing of observations can add erraticity to trajectories. Such erraticity is particularly visible in movement metrics used to detect different activities.
+Data here are acquired at high frequency (one point every 10 seconds).
+Although GPS data have minimal error, the close temporal spacing of
+observations can add erraticity to trajectories. Such erraticity is
+particularly visible in movement metrics used to detect different
+activities.
 
-To correct for these errors, we define a simple Gaussian linear hidden Markov model, as discussed earlier. The hidden dynamics are modeled as a random walk with an unknown innovation matrix, and the observation model assumes a Gaussian distribution centered on the true position with an unknown diagonal variance. The parameters are estimated using the EM algorithm in the `MARSS` package, and Kalman smoothing is used to estimate the true trajectory.  
+To correct for these errors, we define a simple Gaussian linear hidden
+Markov model, as discussed earlier. The hidden dynamics are modeled as a
+random walk with an unknown innovation matrix, and the observation model
+assumes a Gaussian distribution centered on the true position with an
+unknown diagonal variance. The parameters are estimated using the EM
+algorithm in the `MARSS` package, and Kalman smoothing is used to
+estimate the true trajectory.
 
-A smoothed trajectory preview is shown in the figure below, illustrating how smoothing reduces trajectory irregularities. However, note that this transformation involves working with modified data, whose relevance may vary in specific cases.
+A smoothed trajectory preview is shown in the figure below, illustrating
+how smoothing reduces trajectory irregularities. However, note that this
+transformation involves working with modified data, whose relevance may
+vary in specific cases.
 
 ```{r kalman_smoothing, include=FALSE, message = FALSE}
 require(MARSS)
@@ -198,8 +219,6 @@ smoothing_function <- function(utm_data_){
 fou_dta_utm_smoothed <- map_dfr(split(fou_dta_utm, fou_dta_utm$ID), smoothing_function)
 ```
 
-
-
 ```{r plot_smoothing}
 fou_dta_utm_smoothed %>% 
   dplyr::select(Easting, Easting_smoothed, Northing, Northing_smoothed) %>% 
@@ -217,19 +236,35 @@ fou_dta_utm_smoothed %>%
 
 # Fitting a Three-State Model
 
-First, we fit a three-state model. The discussion about choosing the number of states is addressed later.
+First, we fit a three-state model. The discussion about choosing the
+number of states is addressed later.
 
 ## Defining Metrics
 
-We aim to identify different behavioral types within the trajectory, such as foraging (associated with rapid direction changes) and goal-directed travel (characterized by straighter trajectories). Relevant metrics here are turning angle and step length, as these are biologically meaningful for these birds.
+We aim to identify different behavioral types within the trajectory,
+such as foraging (associated with rapid direction changes) and
+goal-directed travel (characterized by straighter trajectories).
+Relevant metrics here are turning angle and step length, as these are
+biologically meaningful for these birds.
 
-We fit two models differing by the considered movement metrics (and their corresponding emission distributions):
-- **Step Length/Angle**: Metrics from @morales2004extracting, using gamma distribution for step length and von Mises distribution for angles.
-- **Bivariate Velocity**: Metrics from @gurarie2009novel, using two independent normal distributions.
+We fit two models differing by the considered movement metrics (and
+their corresponding emission distributions): 
+
+- **Step Length/Angle**:
+Metrics from @morales2004extracting, using gamma distribution for step
+length and von Mises distribution for angles. 
+
+- **Bivariate Velocity**:
+Metrics from @gurarie2009novel, using two independent normal
+distributions.
 
 ## Initializing the Algorithm
 
-These models without covariates have 18 parameters (12 for emission distributions and 6 for transition probabilities). Optimization in such a parameter space is sensitive to initial values. We use a simple k-means classification to find plausible initial parameters for the regimes.
+These models without covariates have 18 parameters (12 for emission
+distributions and 6 for transition probabilities). Optimization in such
+a parameter space is sensitive to initial values. We use a simple
+k-means classification to find plausible initial parameters for the
+regimes.
 
 ```{r moveHMM_data}
 moveHMM_data <- fou_dta_utm_smoothed %>% 
@@ -316,7 +351,11 @@ estimated_states <- moveHMM_states %>%
 
 ## Characterizing Hidden States
 
-For both packages used, HMM parameters are estimated via maximum likelihood, and the most probable sequence of hidden states is retrieved using the Viterbi algorithm. Hidden states correspond to velocity and turning angle distributions. In trajectory terms, they describe segments between two positions (separated by 10 seconds).
+For both packages used, HMM parameters are estimated via maximum
+likelihood, and the most probable sequence of hidden states is retrieved
+using the Viterbi algorithm. Hidden states correspond to velocity and
+turning angle distributions. In trajectory terms, they describe segments
+between two positions (separated by 10 seconds).
 
 ```{r plot_predicted_states}
 estimated_states %>% 
@@ -328,4 +367,3 @@ estimated_states %>%
   labs(color = "Predicted State") +
   theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank())
 ```
-
